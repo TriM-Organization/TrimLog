@@ -12,11 +12,9 @@ max_frames: int = 100
 # Headline definitions
 # {}:版本号
 HEADLINE_INSTRUCTION: str = """ 
-——==
 Using TrimLog Library by Apache2.0 License.
 Copyright 2022-2023 all the developers of Kaleido and Trim Organization.(FedDragon1, Eilles Wan, bgArray)
 Library Version: {}
-——==
 """
 
 
@@ -27,7 +25,6 @@ Using {0} Library by {1} License.
 {2}
 Library Version: {3}
 {4}
-——==
 """
 
 

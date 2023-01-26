@@ -59,6 +59,7 @@ class Logger:
     console: Console = Console()
     __suffix = "dsl"
     isLogging_ = True
+    MaxLogCount: int = 20
 
     def __new__(cls) -> Logger:
         if cls.instance is not None:
@@ -77,7 +78,7 @@ class Logger:
             isLicenseLine: bool = True,
             headlineLevel: L = "WARNING",
             licenseLevel: L = "WARNING",
-            line_length: int = None,
+            maxLogCount: int = 20,
 
     ) -> None:
         self.log_text: str = ""
@@ -100,8 +101,9 @@ class Logger:
         self.print_default_weight = WEIGHT_ORDER.get(self.printLevel)
         self.write_default_weight = WEIGHT_ORDER.get(self.writeLevel)
 
-        # 设置一行长度，默认为15
-        self.line_length_set = line_length
+        # 文件最多保存多少个后开始删除
+        self.maxLogCount: int = maxLogCount
+        Logger.MaxLogCount = self.maxLogCount
 
         # 初始化展示headline
         self.headline_shower()
@@ -125,33 +127,12 @@ class Logger:
                     self.log_text += f"{time.strftime('[%H:%M:%S]')} [{level}] {info}\n"
 
             length = 12 + style_len
-            if self.line_length_set is not None:
-                length = self.line_length_set
 
             if self.isPrint:
                 if level_weight >= self.print_default_weight:
                     self.console.log(f"{style:<{length}}{info!s:<10}")
 
         return info
-
-    def get_length(self, level: Literal["DEBUG",
-                                        "INFO",
-                                        "WARNING",
-                                        "ERROR",
-                                        "CRITICAL"]) -> int:
-        length: int
-        if self.line_length_set is not None:
-            length = self.line_length_set
-        else:
-            style: Optional[str]
-            style_len: Optional[int]
-            style, style_len = getattr(_Level, level, (None, None))
-            if style is None or style_len is None:
-                raise TypeError(
-                    f"等级应为 'DEBUG', 'INFO', 'WARNING', 'ERROR', 或 'CRITICAL' 中的一种，而非 '{level}'"
-                )
-            length = 12 + style_len
-        return length
 
     def set_default_weight(self):
         self.print_default_weight = WEIGHT_ORDER.get(self.printLevel)
@@ -179,20 +160,19 @@ class Logger:
     def headline_shower(self):
         global __version__
         if self.isHeadline:
-            self.log(HEADLINE_INSTRUCTION.format(__version__)
-                     .replace("——==", "——" * (self.get_length(self.headlineLevel) - 1)), self.headlineLevel)
+            self.console.rule("[bold red]Headline")
+            self.log(HEADLINE_INSTRUCTION.format(__version__), self.headlineLevel)
 
     def license_shower(self, lib_name: str,
                        license_name: str,
                        license_line: str,
                        lib_version: str,
                        addition: str = "",
-                       isStartLine: bool = False):
+                       isStartLine: bool = True):
         if self.isLicenseLine:
             license_thing = LICENSE_INSTRUCTION.format(lib_name, license_name, license_line, lib_version, addition)
-            license_thing = license_thing.replace("——==", "——" * (self.get_length(self.licenseLevel) - 1))
             if isStartLine:
-                license_thing = "——" * (self.get_length(self.licenseLevel) - 1) + license_thing  # 统一长度
+                self.console.rule("[bold red]License for " + lib_name)
             self.log(license_thing, self.licenseLevel)
 
     @staticmethod
@@ -206,7 +186,7 @@ class Logger:
             else:
                 full_path = ["logs/{0}".format(x) for x in list_of_files]
 
-                if len(list_of_files) >= 10:
+                if len(list_of_files) >= Logger.MaxLogCount:
                     oldest_file = min(full_path, key=os.path.getctime)
                     logger.log(f"移除最早的日志：{oldest_file!r}", INFO)
                     os.remove(oldest_file)
