@@ -37,7 +37,7 @@ import sys
 import os
 import atexit
 import platform
-from .logConstant import *
+from .constants import *
 from .objectConstant import *
 
 __version__: str = "v0.4.5"
@@ -315,14 +315,14 @@ class Logger:
                     type_,
                     value,
                     traceback,
-                    width=width,
-                    extra_lines=extra_lines,
-                    theme=theme,
-                    word_wrap=word_wrap,
-                    show_locals=show_locals,
-                    indent_guides=indent_guides,
-                    suppress=suppress,
-                    max_frames=max_frames,
+                    width=WIDTH,
+                    extra_lines=EXTRA_LINES,
+                    theme=THEME,
+                    word_wrap=WORD_WRAP,
+                    show_locals=SHOW_LOCALS,
+                    indent_guides=INDENT_GUIDES,
+                    suppress=SUPPRESS,
+                    max_frames=MAX_FRAMES,
                 )
 
                 path = os.path.abspath("./logs/")
@@ -335,14 +335,14 @@ class Logger:
                     type_,
                     value,
                     traceback,
-                    width=width,
-                    extra_lines=extra_lines,
-                    theme=theme,
-                    word_wrap=word_wrap,
-                    show_locals=show_locals,
-                    indent_guides=indent_guides,
-                    suppress=suppress,
-                    max_frames=max_frames,
+                    width=WIDTH,
+                    extra_lines=EXTRA_LINES,
+                    theme=THEME,
+                    word_wrap=WORD_WRAP,
+                    show_locals=SHOW_LOCALS,
+                    indent_guides=INDENT_GUIDES,
+                    suppress=SUPPRESS,
+                    max_frames=MAX_FRAMES,
                 )
 
                 traceback_console.print(exception_no_local)
@@ -383,13 +383,13 @@ def log__init__(osc_in: ObjectStateConstant, pip_in: PipManage) -> None:
 
     pip_manage: PipManage = pip_in
 
-    if pip_manage.count() <= pip_manage.maxPrintLibCount:
+    if pip_manage.count() <= pip_manage.max_printing_lib_count:
         for i in pip_manage.return_lib():
             pip_list += str(i)
     else:
         pip_list = "Amount is bigger than default, so there's no output."
 
-    if pip_manage.isPipDetect:
+    if pip_manage.detect_pip:
         if pip_manage.pip_detect() is True:
             pip_check = "All lib is already done."
         else:
