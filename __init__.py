@@ -26,6 +26,7 @@
 """
 
 from __future__ import annotations
+
 from rich.traceback import Traceback
 from rich.console import Console
 import rich.traceback
@@ -39,8 +40,7 @@ import platform
 from .logConstant import *
 from .objectConstant import *
 
-py_version: str = platform.version()
-__version__: str = "v0.3.5"
+__version__: str = "v0.4.5"
 T = TypeVar("T")
 L = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
@@ -61,7 +61,20 @@ class Logger:
     isLogging_ = True
     MaxLogCount: int = 20
 
-    def __new__(cls) -> Logger:
+    def __new__(cls,
+                isLogging: bool = True,
+                isPrint: bool = True,
+                isWrite: bool = True,
+                printLevel: L = "DEBUG",
+                writeLevel: L = "INFO",
+                isHeadline: bool = True,
+                isLicenseLine: bool = True,
+                headlineLevel: L = "WARNING",
+                licenseLevel: L = "WARNING",
+                maxLogCount: int = 20,
+                isRelease: bool = False,
+                isShowPosition: bool = True,
+                ) -> Logger:
         if cls.instance is not None:
             return cls.instance
         cls.instance = super().__new__(cls)
@@ -79,13 +92,21 @@ class Logger:
             headlineLevel: L = "WARNING",
             licenseLevel: L = "WARNING",
             maxLogCount: int = 20,
-
+            isRelease: bool = False,
+            isShowPosition: bool = True,
     ) -> None:
         self.log_text: str = ""
 
         # 总开关，根据OSC
         self.isLogging = isLogging
         Logger.isLogging_ = isLogging
+
+        # 是否需要输出一些开发时不需要输出的内容；但是用户使用时需要输出的内容
+        # 也就是Release版本到不同平台不同版本Python下需要增加的一些信息
+        self.isRelease = isRelease
+
+        # 是否需要console.log(end="....")
+        self.isShowPosition: bool = isShowPosition
 
         # 头声明；协议声明
         self.isHeadline: bool = isHeadline
@@ -110,7 +131,10 @@ class Logger:
 
     def log(self,
             info: T,
-            level: L) -> T:
+            level: L,
+            upLine: int = None,
+            upFunction: str = None,
+            upModel: str = None) -> T:
         if self.isLogging:
             style: Optional[str]
             style_len: Optional[int]
@@ -122,15 +146,33 @@ class Logger:
 
             level_weight = WEIGHT_ORDER.get(level)
 
+            if upLine is None and upFunction is None and upModel is None:
+                back_frame = sys._getframe().f_back
+                upModel: str = os.path.basename(back_frame.f_code.co_filename)
+                upFunction: str = back_frame.f_code.co_name
+                upLine: int = back_frame.f_lineno
+
+            if self.isShowPosition:
+                end_with = "{0}-{1}: {2}\n".format(upModel, upFunction, str(upLine))
+
             if self.isWrite:
                 if level_weight >= self.write_default_weight:
-                    self.log_text += f"{time.strftime('[%H:%M:%S]')} [{level}] {info}\n"
+                    if self.isShowPosition:
+                        e_w = end_with.replace("\n", "")
+                        self.log_text += f"{time.strftime('[%H:%M:%S]')} [{level}] [{e_w}] {info}\n"
+                    else:
+                        self.log_text += f"{time.strftime('[%H:%M:%S]')} [{level}] {info}\n"
 
             length = 12 + style_len
 
             if self.isPrint:
                 if level_weight >= self.print_default_weight:
-                    self.console.log(f"{style:<{length}}{info!s:<10}")
+                    if self.isShowPosition:
+                        e_w = " <" + end_with.replace("\n", "") + "> "
+                        add = style + e_w
+                        self.console.log(f"{add:<{length}}{info!s:<10}")
+                    else:
+                        self.console.log(f"{style:<{length}}{info!s:<10}")
 
         return info
 
@@ -139,19 +181,41 @@ class Logger:
         self.write_default_weight = WEIGHT_ORDER.get(self.writeLevel)
 
     def debug(self, debug: T) -> T:
-        return self.log(debug, "DEBUG")
+        back_frame = sys._getframe().f_back
+        back_file_name: str = os.path.basename(back_frame.f_code.co_filename)
+        back_func_name: str = back_frame.f_code.co_name
+        back_line_number: int = back_frame.f_lineno
+        return self.log(debug, "DEBUG", back_line_number, back_func_name, back_file_name)
 
     def info(self, info: T) -> T:
-        return self.log(info, "INFO")
+        back_frame = sys._getframe().f_back
+        back_file_name: str = os.path.basename(back_frame.f_code.co_filename)
+        back_func_name: str = back_frame.f_code.co_name
+        back_line_number: int = back_frame.f_lineno
+        return self.log(info, "INFO", back_line_number, back_func_name, back_file_name)
 
     def warning(self, warning: T) -> T:
-        return self.log(warning, "WARNING")
+        back_frame = sys._getframe().f_back
+        back_file_name: str = os.path.basename(back_frame.f_code.co_filename)
+        back_func_name: str = back_frame.f_code.co_name
+        back_line_number: int = back_frame.f_lineno
+        print(back_func_name)
+        print(back_line_number)
+        return self.log(warning, "WARNING", back_line_number, back_func_name, back_file_name)
 
     def error(self, error: T) -> T:
-        return self.log(error, "ERROR")
+        back_frame = sys._getframe().f_back
+        back_file_name: str = os.path.basename(back_frame.f_code.co_filename)
+        back_func_name: str = back_frame.f_code.co_name
+        back_line_number: int = back_frame.f_lineno
+        return self.log(error, "ERROR", back_line_number, back_func_name, back_file_name)
 
     def critical(self, critical: T) -> T:
-        return self.log(critical, "CRITICAL")
+        back_frame = sys._getframe().f_back
+        back_file_name: str = os.path.basename(back_frame.f_code.co_filename)
+        back_func_name: str = back_frame.f_code.co_name
+        back_line_number: int = back_frame.f_lineno
+        return self.log(critical, "CRITICAL", back_line_number, back_func_name, back_file_name)
 
     def write(self, text: str) -> None:
         if self.isLogging:
@@ -161,7 +225,22 @@ class Logger:
         global __version__
         if self.isHeadline:
             self.console.rule("[bold red]Headline")
-            self.log(HEADLINE_INSTRUCTION.format(__version__), self.headlineLevel)
+            self.log(HEADLINE_STRUCTURE.format(__version__), self.headlineLevel)
+
+    def baseInfo_shower(self):
+        global py_version, py_sys_version, py_sys_version_info, pip_list, \
+            pip_check, default_encoding, running_path, file_system_encoding, py_platform
+        if self.isRelease and self.isLogging:
+            self.console.rule("[bold red]BaseInfo")
+            self.log(RELEASE_STRUCTURE.format(py_platform,
+                                              py_version,
+                                              py_sys_version,
+                                              py_sys_version_info,
+                                              running_path,
+                                              default_encoding,
+                                              file_system_encoding,
+                                              pip_list,
+                                              pip_check), self.headlineLevel)
 
     def license_shower(self, lib_name: str,
                        license_name: str,
@@ -169,8 +248,8 @@ class Logger:
                        lib_version: str,
                        addition: str = "",
                        isStartLine: bool = True):
-        if self.isLicenseLine:
-            license_thing = LICENSE_INSTRUCTION.format(lib_name, license_name, license_line, lib_version, addition)
+        if self.isLicenseLine and self.isLogging:
+            license_thing = LICENSE_STRUCTURE.format(lib_name, license_name, license_line, lib_version, addition)
             if isStartLine:
                 self.console.rule("[bold red]License for " + lib_name)
             self.log(license_thing, self.licenseLevel)
@@ -279,10 +358,37 @@ class Logger:
             sys.excepthook = excepthook
 
 
-def log__init__(osc_in: ObjectStateConstant) -> None:
-    global osc_, logger
+py_version: str = platform.version()
+py_sys_version: str = sys.version
+py_sys_version_info: str = sys.version_info
+py_platform: str = sys.platform
+default_encoding: str = sys.getdefaultencoding()  # 获取系统当前编码
+file_system_encoding: str = sys.getfilesystemencoding()  # 获取文件系统使用编码方式，Windows下返回'mbcs'，mac下返回'utf-8'
+running_path: str = os.path.abspath("./")  # logger程序目录环境
+pip_list: str = ""
+pip_check: str
+
+
+def log__init__(osc_in: ObjectStateConstant, pip_in: PipManage) -> None:
+    global osc_, logger, pip_list, pip_check
     osc_ = osc_in
     logger.isLogging = osc_.isLoggingUsing
+
+    pip_manage: PipManage = pip_in
+
+    if pip_manage.count() <= pip_manage.maxPrintLibCount:
+        for i in pip_manage.return_lib():
+            pip_list += str(i)
+    else:
+        pip_list = "Amount is bigger than default, so there's no output."
+
+    if pip_manage.isPipDetect:
+        if pip_manage.pip_detect() is True:
+            pip_check = "All lib is already done."
+        else:
+            pip_check = pip_manage.pip_detect()
+    else:
+        pip_check = "Don't use pip check."
 
 
 logger = Logger()

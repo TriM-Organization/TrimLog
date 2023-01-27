@@ -7,16 +7,23 @@ from loggerT import log__init__, logger
 osc_ = objectConstant.ObjectStateConstant()
 osc_.isLoggingUsing = False
 
-log__init__(osc_)
+pm = loggerT.PipManage(True, 40)
+pm.detecting_setting(requirements_path="requirements.txt")
+# print(pm.pip_detect())
+log__init__(osc_, pm)
+logger.isRelease = True
+logger.baseInfo_shower()
 
-logger.info("a")
+logger.info("nothing")
 
 osc_.isLoggingUsing = True
 
-log__init__(osc_)
+log__init__(osc_, pm)
 
 logger.info("a")
 logger.license_shower("libA", "GPL3.0", "Copyright 2023 xxx", "v0.0.1", "This lib is xxx.", True)
+logger.isRelease = True
+logger.baseInfo_shower()
 
 logger.printLevel = loggerT.CRITICAL
 logger.set_default_weight()

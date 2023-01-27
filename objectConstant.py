@@ -10,6 +10,8 @@ class ObjectStateConstant(builtins.object):
 
         self.isLoggingUsing = True
 
+        self.isRelease = False
+
     def get_is_debug(self):
         return self.isDebugging
 
