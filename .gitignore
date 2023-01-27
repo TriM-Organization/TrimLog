@@ -143,4 +143,8 @@ cython_debug/
 # log
 .log/
 .logs/
+logs/
 .log
+
+loggerT/
+requirements.txt
