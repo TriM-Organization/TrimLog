@@ -3,9 +3,9 @@ import builtins
 
 class ObjectStateConstant(builtins.object):
     def __init__(self):
-        self.isDebugging = True
-        self.versionStr = "v0.0.1"
-        self.versionL = (0, 0, 1)
+        self.debugging = True
+        self.version = "v0.0.1"
+        self.version_tuple = (0, 0, 1)
         self.ParameterSelection = "default=self"
 
         self.isLoggingUsing = True
@@ -13,15 +13,15 @@ class ObjectStateConstant(builtins.object):
         self.isRelease = False
 
     def get_is_debug(self):
-        return self.isDebugging
+        return self.debugging
 
-    def programVersion(self):
-        return [self.versionStr, self.versionL]
+    def get_versions(self):
+        return [self.version, self.version_tuple]
 
-    def debuggingPrint(self, anything):
-        if self.isDebugging:
+    def debugging_print(self, anything):
+        if self.debugging:
             print(anything)
 
     def dp(self, anything):
-        if self.isDebugging:
+        if self.debugging:
             print(anything)
