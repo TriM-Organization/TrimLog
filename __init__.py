@@ -37,8 +37,8 @@ import sys
 import os
 import atexit
 import platform
-from .constants import *
-from .objectConstant import *
+from .logger_constants import *
+from .object_constants import *
 
 __version__: str = "v0.4.5"
 T = TypeVar("T")
