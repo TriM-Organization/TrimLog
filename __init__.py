@@ -58,84 +58,87 @@ class Logger:
     str_start_time: str = time.strftime("%Y-%m-%d %H_%M_%S")
     console: Console = Console()
     __suffix = "dsl"
-    isLogging_ = True
-    MaxLogCount: int = 20
+    is_logging = True
+    max_log_count: int = 20
 
-    def __new__(cls,
-                isLogging: bool = True,
-                isPrint: bool = True,
-                isWrite: bool = True,
-                printLevel: L = "DEBUG",
-                writeLevel: L = "INFO",
-                isHeadline: bool = True,
-                isLicenseLine: bool = True,
-                headlineLevel: L = "WARNING",
-                licenseLevel: L = "WARNING",
-                maxLogCount: int = 20,
-                isRelease: bool = False,
-                isShowPosition: bool = True,
-                ) -> Logger:
+    def __new__(
+        cls,
+        is_logging: bool = True,
+        printing: bool = True,
+        writing: bool = True,
+        print_level: L = "DEBUG",
+        write_level: L = "INFO",
+        include_headline: bool = True,
+        include_license: bool = True,
+        headline_level: L = "WARNING",
+        license_level: L = "WARNING",
+        max_log_count: int = 20,
+        include_release_info: bool = False,
+        show_position: bool = True,
+    ) -> Logger:
         if cls.instance is not None:
             return cls.instance
         cls.instance = super().__new__(cls)
         return cls.instance
 
     def __init__(
-            self,
-            isLogging: bool = True,
-            isPrint: bool = True,
-            isWrite: bool = True,
-            printLevel: L = "DEBUG",
-            writeLevel: L = "INFO",
-            isHeadline: bool = True,
-            isLicenseLine: bool = True,
-            headlineLevel: L = "WARNING",
-            licenseLevel: L = "WARNING",
-            maxLogCount: int = 20,
-            isRelease: bool = False,
-            isShowPosition: bool = True,
+        self,
+        is_logging: bool = True,
+        printing: bool = True,
+        writing: bool = True,
+        print_level: L = "DEBUG",
+        write_level: L = "INFO",
+        include_headline: bool = True,
+        include_license: bool = True,
+        headline_level: L = "WARNING",
+        license_level: L = "WARNING",
+        max_log_count: int = 20,
+        include_release_info: bool = False,
+        show_position: bool = False,
     ) -> None:
         self.log_text: str = ""
 
         # 总开关，根据OSC
-        self.isLogging = isLogging
-        Logger.isLogging_ = isLogging
+        self.is_logging = is_logging
+        Logger.is_logging = is_logging
 
         # 是否需要输出一些开发时不需要输出的内容；但是用户使用时需要输出的内容
         # 也就是Release版本到不同平台不同版本Python下需要增加的一些信息
-        self.isRelease = isRelease
+        self.include_release_info: bool = include_release_info
 
         # 是否需要console.log(end="....")
-        self.isShowPosition: bool = isShowPosition
+        self.show_position: bool = show_position
 
         # 头声明；协议声明
-        self.isHeadline: bool = isHeadline
-        self.isLicenseLine: bool = isLicenseLine
-        self.headlineLevel: L = headlineLevel
-        self.licenseLevel: L = licenseLevel
+        self.include_headline: bool = include_headline
+        self.include_license: bool = include_license
+        self.headline_level: L = headline_level
+        self.license_level: L = license_level
 
         # 打印到屏幕设置；写入到文件设置
-        self.isPrint: bool = isPrint
-        self.isWrite: bool = isWrite
-        self.printLevel: L = printLevel
-        self.writeLevel: L = writeLevel
-        self.print_default_weight = WEIGHT_ORDER.get(self.printLevel)
-        self.write_default_weight = WEIGHT_ORDER.get(self.writeLevel)
+        self.printing: bool = printing
+        self.writing: bool = writing
+        self.print_level: L = print_level
+        self.write_level: L = write_level
+        self.print_default_weight = WEIGHT_ORDER.get(self.print_level)
+        self.write_default_weight = WEIGHT_ORDER.get(self.write_level)
 
         # 文件最多保存多少个后开始删除
-        self.maxLogCount: int = maxLogCount
-        Logger.MaxLogCount = self.maxLogCount
+        self.max_log_count: int = max_log_count
+        Logger.max_log_count = self.max_log_count
 
         # 初始化展示headline
         self.headline_shower()
 
-    def log(self,
-            info: T,
-            level: L,
-            upLine: int = None,
-            upFunction: str = None,
-            upModel: str = None) -> T:
-        if self.isLogging:
+    def log(
+        self,
+        info: T,
+        level: L,
+        frame_lineno: int = None,
+        frame_name: str = None,
+        frame_file: str = None,
+    ) -> T:
+        if self.is_logging:
             style: Optional[str]
             style_len: Optional[int]
             style, style_len = getattr(_Level, level, (None, None))
@@ -146,28 +149,34 @@ class Logger:
 
             level_weight = WEIGHT_ORDER.get(level)
 
-            if upLine is None and upFunction is None and upModel is None:
+            if frame_lineno is None and frame_name is None and frame_file is None:
                 back_frame = sys._getframe().f_back
-                upModel: str = os.path.basename(back_frame.f_code.co_filename)
-                upFunction: str = back_frame.f_code.co_name
-                upLine: int = back_frame.f_lineno
+                frame_file: str = os.path.basename(back_frame.f_code.co_filename)
+                frame_name: str = back_frame.f_code.co_name
+                frame_lineno: int = back_frame.f_lineno
 
-            if self.isShowPosition:
-                end_with = "{0}-{1}: {2}\n".format(upModel, upFunction, str(upLine))
+            if self.show_position:
+                end_with = "{0}-{1}: {2}\n".format(
+                    frame_file, frame_name, str(frame_lineno)
+                )
 
-            if self.isWrite:
+            if self.writing:
                 if level_weight >= self.write_default_weight:
-                    if self.isShowPosition:
+                    if self.show_position:
                         e_w = end_with.replace("\n", "")
-                        self.log_text += f"{time.strftime('[%H:%M:%S]')} [{level}] [{e_w}] {info}\n"
+                        self.log_text += (
+                            f"{time.strftime('[%H:%M:%S]')} [{level}] [{e_w}] {info}\n"
+                        )
                     else:
-                        self.log_text += f"{time.strftime('[%H:%M:%S]')} [{level}] {info}\n"
+                        self.log_text += (
+                            f"{time.strftime('[%H:%M:%S]')} [{level}] {info}\n"
+                        )
 
             length = 12 + style_len
 
-            if self.isPrint:
+            if self.printing:
                 if level_weight >= self.print_default_weight:
-                    if self.isShowPosition:
+                    if self.show_position:
                         e_w = " <" + end_with.replace("\n", "") + "> "
                         add = style + e_w
                         self.console.log(f"{add:<{length}}{info!s:<10}")
@@ -177,87 +186,82 @@ class Logger:
         return info
 
     def set_default_weight(self):
-        self.print_default_weight = WEIGHT_ORDER.get(self.printLevel)
-        self.write_default_weight = WEIGHT_ORDER.get(self.writeLevel)
+        self.print_default_weight = WEIGHT_ORDER.get(self.print_level)
+        self.write_default_weight = WEIGHT_ORDER.get(self.write_level)
+
+    @staticmethod
+    def get_detail_info():
+        back_frame = sys._getframe().f_back.f_back  # 上一帧=debug/info/..., 上上帧=目标函数
+        back_file_name: str = os.path.basename(back_frame.f_code.co_filename)
+        back_func_name: str = back_frame.f_code.co_name
+        back_line_number: int = back_frame.f_lineno
+        return back_file_name, back_func_name, back_line_number
 
     def debug(self, debug: T) -> T:
-        back_frame = sys._getframe().f_back
-        back_file_name: str = os.path.basename(back_frame.f_code.co_filename)
-        back_func_name: str = back_frame.f_code.co_name
-        back_line_number: int = back_frame.f_lineno
-        return self.log(debug, "DEBUG", back_line_number, back_func_name, back_file_name)
+        return self.log(debug, "DEBUG", *self.get_detail_info())
 
     def info(self, info: T) -> T:
-        back_frame = sys._getframe().f_back
-        back_file_name: str = os.path.basename(back_frame.f_code.co_filename)
-        back_func_name: str = back_frame.f_code.co_name
-        back_line_number: int = back_frame.f_lineno
-        return self.log(info, "INFO", back_line_number, back_func_name, back_file_name)
+        return self.log(info, "INFO", *self.get_detail_info())
 
     def warning(self, warning: T) -> T:
-        back_frame = sys._getframe().f_back
-        back_file_name: str = os.path.basename(back_frame.f_code.co_filename)
-        back_func_name: str = back_frame.f_code.co_name
-        back_line_number: int = back_frame.f_lineno
-        print(back_func_name)
-        print(back_line_number)
-        return self.log(warning, "WARNING", back_line_number, back_func_name, back_file_name)
+        return self.log(warning, "WARNING", *self.get_detail_info())
 
     def error(self, error: T) -> T:
-        back_frame = sys._getframe().f_back
-        back_file_name: str = os.path.basename(back_frame.f_code.co_filename)
-        back_func_name: str = back_frame.f_code.co_name
-        back_line_number: int = back_frame.f_lineno
-        return self.log(error, "ERROR", back_line_number, back_func_name, back_file_name)
+        return self.log(error, "ERROR", *self.get_detail_info())
 
     def critical(self, critical: T) -> T:
-        back_frame = sys._getframe().f_back
-        back_file_name: str = os.path.basename(back_frame.f_code.co_filename)
-        back_func_name: str = back_frame.f_code.co_name
-        back_line_number: int = back_frame.f_lineno
-        return self.log(critical, "CRITICAL", back_line_number, back_func_name, back_file_name)
+        return self.log(critical, "CRITICAL", *self.get_detail_info())
 
     def write(self, text: str) -> None:
-        if self.isLogging:
+        if self.is_logging:
             self.log_text += text
 
     def headline_shower(self):
         global __version__
-        if self.isHeadline:
+        if self.include_headline:
             self.console.rule("[bold red]Headline")
-            self.log(HEADLINE_STRUCTURE.format(__version__), self.headlineLevel)
+            self.log(HEADLINE_STRUCTURE.format(__version__), self.headline_level)
 
-    def baseInfo_shower(self):
-        global py_version, py_sys_version, py_sys_version_info, pip_list, \
-            pip_check, default_encoding, running_path, file_system_encoding, py_platform
-        if self.isRelease and self.isLogging:
+    def baseinfo_shower(self):
+        global py_version, py_sys_version, py_sys_version_info, pip_list, pip_check, default_encoding, running_path, file_system_encoding, py_platform
+        if self.include_release_info and self.is_logging:
             self.console.rule("[bold red]BaseInfo")
-            self.log(RELEASE_STRUCTURE.format(py_platform,
-                                              py_version,
-                                              py_sys_version,
-                                              py_sys_version_info,
-                                              running_path,
-                                              default_encoding,
-                                              file_system_encoding,
-                                              pip_list,
-                                              pip_check), self.headlineLevel)
+            self.log(
+                RELEASE_STRUCTURE.format(
+                    py_platform,
+                    py_version,
+                    py_sys_version,
+                    py_sys_version_info,
+                    running_path,
+                    default_encoding,
+                    file_system_encoding,
+                    pip_list,
+                    pip_check,
+                ),
+                self.headline_level,
+            )
 
-    def license_shower(self, lib_name: str,
-                       license_name: str,
-                       license_line: str,
-                       lib_version: str,
-                       addition: str = "",
-                       isStartLine: bool = True):
-        if self.isLicenseLine and self.isLogging:
-            license_thing = LICENSE_STRUCTURE.format(lib_name, license_name, license_line, lib_version, addition)
-            if isStartLine:
+    def license_shower(
+        self,
+        lib_name: str,
+        license_name: str,
+        license_line: str,
+        lib_version: str,
+        addition: str = "",
+        include_startline: bool = True,
+    ):
+        if self.include_license and self.is_logging:
+            license_thing = LICENSE_STRUCTURE.format(
+                lib_name, license_name, license_line, lib_version, addition
+            )
+            if include_startline:
                 self.console.rule("[bold red]License for " + lib_name)
-            self.log(license_thing, self.licenseLevel)
+            self.log(license_thing, self.license_level)
 
     @staticmethod
     @atexit.register
     def save() -> None:
-        if Logger.isLogging_:
+        if Logger.is_logging:
             try:
                 list_of_files = os.listdir("logs")
             except FileNotFoundError:
@@ -265,7 +269,7 @@ class Logger:
             else:
                 full_path = ["logs/{0}".format(x) for x in list_of_files]
 
-                if len(list_of_files) >= Logger.MaxLogCount:
+                if len(list_of_files) >= Logger.max_log_count:
                     oldest_file = min(full_path, key=os.path.getctime)
                     logger.log(f"移除最早的日志：{oldest_file!r}", INFO)
                     os.remove(oldest_file)
@@ -284,9 +288,10 @@ class Logger:
                     return
 
                 with open(
-                        "./logs/" + (name := (Logger.str_start_time + f".{Logger.__suffix}.log")),
-                        "w",
-                        encoding="UTF-8",
+                    "./logs/"
+                    + (name := (Logger.str_start_time + f".{Logger.__suffix}.log")),
+                    "w",
+                    encoding="UTF-8",
                 ) as f:
                     f.write(Logger.instance.log_text)
 
@@ -297,13 +302,13 @@ class Logger:
 
     @staticmethod
     def register_traceback() -> None:
-        if Logger.isLogging_:
+        if Logger.is_logging:
             traceback_console = Console(file=sys.stderr, width=100)
 
             def excepthook(
-                    type_: Type[BaseException],
-                    value: BaseException,
-                    traceback: Optional[TracebackType],
+                type_: Type[BaseException],
+                value: BaseException,
+                traceback: Optional[TracebackType],
             ) -> None:
 
                 exception = Traceback.from_exception(
@@ -342,13 +347,13 @@ class Logger:
 
                 traceback_console.print(exception_no_local)
                 for exc in exception.__rich_console__(
-                        traceback_console, traceback_console.options
+                    traceback_console, traceback_console.options
                 ):
                     if isinstance(exc, rich.traceback.Constrain):
                         panel = exc.renderable
 
                         for thing in panel.__rich_console__(
-                                traceback_console, traceback_console.options
+                            traceback_console, traceback_console.options
                         ):
                             logger.write(thing.text)
 
@@ -363,7 +368,9 @@ py_sys_version: str = sys.version
 py_sys_version_info: str = sys.version_info
 py_platform: str = sys.platform
 default_encoding: str = sys.getdefaultencoding()  # 获取系统当前编码
-file_system_encoding: str = sys.getfilesystemencoding()  # 获取文件系统使用编码方式，Windows下返回'mbcs'，mac下返回'utf-8'
+file_system_encoding: str = (
+    sys.getfilesystemencoding()
+)  # 获取文件系统使用编码方式，Windows下返回'mbcs'，mac下返回'utf-8'
 running_path: str = os.path.abspath("./")  # logger程序目录环境
 pip_list: str = ""
 pip_check: str
@@ -372,7 +379,7 @@ pip_check: str
 def log__init__(osc_in: ObjectStateConstant, pip_in: PipManage) -> None:
     global osc_, logger, pip_list, pip_check
     osc_ = osc_in
-    logger.isLogging = osc_.isLoggingUsing
+    logger.is_logging = osc_.isLoggingUsing
 
     pip_manage: PipManage = pip_in
 
@@ -410,6 +417,7 @@ __all__ = [
     "CRITICAL",
     "py_version",
     "__version__",
-    "log__init__"]
+    "log__init__",
+]
 
 osc_: ObjectStateConstant = ObjectStateConstant()
