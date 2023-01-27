@@ -1,4 +1,5 @@
 import builtins
+import rich.console
 
 
 class ObjectStateConstant(builtins.object):
@@ -12,6 +13,11 @@ class ObjectStateConstant(builtins.object):
 
         self.isRelease = False
 
+        self.console = None
+
+    def get_console(self, in_console: rich.console.Console) -> None:
+        self.console: rich.console.Console = in_console
+
     def get_is_debug(self):
         return self.debugging
 
@@ -20,8 +26,14 @@ class ObjectStateConstant(builtins.object):
 
     def debugging_print(self, anything):
         if self.debugging:
-            print(anything)
+            if self.console is not None:
+                self.console.print(anything)
+            else:
+                print(anything)
 
     def dp(self, anything):
         if self.debugging:
-            print(anything)
+            if self.console is not None:
+                self.console.print(anything)
+            else:
+                print(anything)

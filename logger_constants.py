@@ -1,5 +1,6 @@
 import pkg_resources
 from typing import Union
+import os
 
 # Traceback exception definitions
 WIDTH: int = 100
@@ -56,24 +57,46 @@ class OverSettings(BaseException):  # PIP管理设置参数过多
 
 # Pip method
 class PipManage:
+    """
+    管理Pip的类，一个Project一个即可
+    """
+    __version__ = "v0.2.5"
+
     def __init__(self,
-                 detect_pip: bool = False,
-                 max_printing_lib_count: int = 20):
+                 is_detect_pip: bool = False,
+                 is_install_pip: bool = False,
+                 max_printing_lib_count: int = 20,
+                 ):
+        """
+        实例化对象
+        :param is_detect_pip: logger库 是否启用检测pip安装情况
+        :param max_printing_lib_count: logger库 最大print多少个Lib的阈值
+        """
         self.working_set = pkg_resources.WorkingSet()
-        self.lst = [d for d in self.working_set]  # 本环境下已有内容
+        self.lst: list = [d for d in self.working_set]  # 本环境下已有内容
 
-        self.detect_pip = detect_pip  # 是否自动检测
+        self.is_detect_pip: bool = is_detect_pip  # 是否自动检测
+        self.is_install_pip: bool = is_install_pip  # 是否自动安装
 
-        self.max_printing_lib_count = max_printing_lib_count  # 打印阈值
+        self.max_printing_lib_count: int = max_printing_lib_count  # 打印阈值
 
         self.set_lst = []  # 需要目标
+        self.detect_report = []  # 报告
 
-    def count(self):
+    def count(self) -> int:
+        """
+        返回环境下pip lib count
+        :return: pip lib count
+        """
         return self.lst.__len__()
 
-    def return_lib(self):
+    def return_lib(self) -> tuple[str, str, list]:
+        """
+        以yield方式返回环境下的 包名和版本 , 所依赖的其他包
+        :return:
+        """
         for item in self.lst:
-            yield item.project_name, item.version, item.requires()  # 包名和版本 , 所依赖的其他包
+            yield str(item.project_name), str(item.version), list(item.requires())  # 包名和版本 , 所依赖的其他包
 
     def pip_detect(self) -> Union[bool, list[dict[str, str]], list[dict[str, None]]]:
         """
@@ -88,16 +111,30 @@ class PipManage:
                     self.set_lst.remove(i)
                     break
                 elif str(item.project_name) in str(i):
-                    return_list.append({"need": str(i), "have": str(item.project_name) + "==" + str(item.version)})
-                    self.set_lst.remove(i)
-                    break
+                    if str(i).count("==") == 0:
+                        self.set_lst.remove(i)
+                        break
+                    else:
+                        return_list.append({"need": str(i), "have": str(item.project_name) + "==" + str(item.version)})
+                        self.set_lst.remove(i)
+                        break
+                elif str(i) in (str(item.project_name) + "==" + str(item.version)):
+                    if str(i).count("==") == 0:
+                        self.set_lst.remove(i)
+                        break
+                elif str(i).lower() in (str(item.project_name).lower() + "==" + str(item.version)):
+                    if str(i).count("==") == 0:
+                        self.set_lst.remove(i)
+                        break
 
         if self.set_lst.__len__() == 0 and return_list.__len__() == 0:  # 无版本不匹配及库缺失
+            self.set_lst = []
+            self.detect_report = []
             return True
         else:
             for i in self.set_lst:
                 return_list.append({"need": str(i), "have": None})
-            self.set_lst = return_list
+            self.detect_report = return_list
             return return_list
 
     def detecting_setting(self,
@@ -116,8 +153,7 @@ class PipManage:
         elif requirements_list is not None:
             self.set_lst = requirements_list
         elif requirements_path is not None:
-            with open(requirements_path, mode="r", encoding="utf-16") as f:
-                requirements_string = f.read(-1)
+            requirements_string: str = self.open_req(requirements_path)
             REs = []
             for i in range(requirements_string.count("\n")):
                 if requirements_string != "" and requirements_string != "\n" and requirements_string != " " and \
@@ -132,3 +168,29 @@ class PipManage:
             if requirements_string != "":
                 REs.append(pkg_resources.Requirement.parse(requirements_string))
             self.set_lst = REs
+
+    @staticmethod
+    def open_req(path: str) -> str:
+        try:
+            f = open(path, mode="r", encoding="utf-16")
+            return f.read(-1)
+        except UnicodeError as e:
+            f.close()
+            if str(e) == "UTF-16 stream does not start with BOM":
+                f = open(path, mode="r", encoding="utf-8")
+                return f.read(-1)
+        finally:
+            f.close()
+
+    def pip_install(self) -> bool:
+        if self.is_install_pip:
+            if self.detect_report.__len__() == 0:
+                return True
+            for i in self.detect_report:
+                if i["have"] is None:
+                    command = "pip install " + str(i["need"])
+                    os.system(command)
+            if self.pip_detect():
+                return True
+            else:
+                return False

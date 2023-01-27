@@ -27,20 +27,21 @@
 
 from __future__ import annotations
 
-from rich.traceback import Traceback
-from rich.console import Console
-import rich.traceback
-from typing import Literal, Optional, Type, TypeVar
-from types import TracebackType
-import time
-import sys
-import os
 import atexit
 import platform
+import sys
+import time
+from types import TracebackType
+from typing import Literal, Optional, Type, TypeVar
+
+import rich.traceback
+from rich.console import Console
+from rich.traceback import Traceback
+
 from .logger_constants import *
 from .object_constants import *
 
-__version__: str = "v0.4.5"
+__version__: str = "v0.5.0"
 T = TypeVar("T")
 L = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
@@ -62,19 +63,19 @@ class Logger:
     max_log_count: int = 20
 
     def __new__(
-        cls,
-        is_logging: bool = True,
-        printing: bool = True,
-        writing: bool = True,
-        print_level: L = "DEBUG",
-        write_level: L = "INFO",
-        include_headline: bool = True,
-        include_license: bool = True,
-        headline_level: L = "WARNING",
-        license_level: L = "WARNING",
-        max_log_count: int = 20,
-        include_release_info: bool = False,
-        show_position: bool = True,
+            cls,
+            is_logging: bool = True,
+            printing: bool = True,
+            writing: bool = True,
+            print_level: L = "DEBUG",
+            write_level: L = "INFO",
+            include_headline: bool = True,
+            include_license: bool = True,
+            headline_level: L = "WARNING",
+            license_level: L = "WARNING",
+            max_log_count: int = 20,
+            include_release_info: bool = False,
+            show_position: bool = True,
     ) -> Logger:
         if cls.instance is not None:
             return cls.instance
@@ -82,19 +83,19 @@ class Logger:
         return cls.instance
 
     def __init__(
-        self,
-        is_logging: bool = True,
-        printing: bool = True,
-        writing: bool = True,
-        print_level: L = "DEBUG",
-        write_level: L = "INFO",
-        include_headline: bool = True,
-        include_license: bool = True,
-        headline_level: L = "WARNING",
-        license_level: L = "WARNING",
-        max_log_count: int = 20,
-        include_release_info: bool = False,
-        show_position: bool = False,
+            self,
+            is_logging: bool = True,
+            printing: bool = True,
+            writing: bool = True,
+            print_level: L = "DEBUG",
+            write_level: L = "INFO",
+            include_headline: bool = True,
+            include_license: bool = True,
+            headline_level: L = "WARNING",
+            license_level: L = "WARNING",
+            max_log_count: int = 20,
+            include_release_info: bool = False,
+            show_position: bool = False,
     ) -> None:
         self.log_text: str = ""
 
@@ -131,12 +132,12 @@ class Logger:
         self.headline_shower()
 
     def log(
-        self,
-        info: T,
-        level: L,
-        frame_lineno: int = None,
-        frame_name: str = None,
-        frame_file: str = None,
+            self,
+            info: T,
+            level: L,
+            frame_file: str = None,
+            frame_name: str = None,
+            frame_lineno: int = None,
     ) -> T:
         if self.is_logging:
             style: Optional[str]
@@ -217,13 +218,22 @@ class Logger:
             self.log_text += text
 
     def headline_shower(self):
-        global __version__
+        global __version__, pip_manage_
         if self.include_headline:
             self.console.rule("[bold red]Headline")
             self.log(HEADLINE_STRUCTURE.format(__version__), self.headline_level)
 
+            license_thing = LICENSE_STRUCTURE.format(
+                "Pip manage Lib", "Apache 2.0",
+                "Copyright 2022-2023 all the developers of Trim Organization.(FedDragon1, Eilles Wan, bgArray)",
+                str(pip_manage_.__version__), ""
+            )
+            self.console.rule("[bold red]License for " + "Pip manage Lib")
+            self.log(license_thing, self.license_level)
+
     def baseinfo_shower(self):
-        global py_version, py_sys_version, py_sys_version_info, pip_list, pip_check, default_encoding, running_path, file_system_encoding, py_platform
+        global py_version, py_sys_version, py_sys_version_info, pip_list, pip_check, default_encoding, \
+            running_path, file_system_encoding, py_platform
         if self.include_release_info and self.is_logging:
             self.console.rule("[bold red]BaseInfo")
             self.log(
@@ -242,13 +252,13 @@ class Logger:
             )
 
     def license_shower(
-        self,
-        lib_name: str,
-        license_name: str,
-        license_line: str,
-        lib_version: str,
-        addition: str = "",
-        include_startline: bool = True,
+            self,
+            lib_name: str,
+            license_name: str,
+            license_line: str,
+            lib_version: str,
+            addition: str = "",
+            include_startline: bool = True,
     ):
         if self.include_license and self.is_logging:
             license_thing = LICENSE_STRUCTURE.format(
@@ -257,6 +267,38 @@ class Logger:
             if include_startline:
                 self.console.rule("[bold red]License for " + lib_name)
             self.log(license_thing, self.license_level)
+
+    @staticmethod
+    def default_value_return():
+        return_list = [
+            {
+                "WIDTH": WIDTH,
+                "EXTRA_LINES": EXTRA_LINES,
+                "THEME": THEME,
+                "WORD_WRAP": WORD_WRAP,
+                "SHOW_LOCALS": SHOW_LOCALS,
+                "INDENT_GUIDES": INDENT_GUIDES,
+                "SUPPRESS": SUPPRESS,
+                "MAX_FRAMES": MAX_FRAMES
+            },
+            {
+                "HEADLINE_STRUCTURE": HEADLINE_STRUCTURE,
+                "LICENSE_STRUCTURE": LICENSE_STRUCTURE,
+                "RELEASE_STRUCTURE": RELEASE_STRUCTURE
+            },
+            {
+                "WEIGHT_ORDER": WEIGHT_ORDER
+            },
+            {
+                "NoSettings": NoSettings,
+                "OverSettings": OverSettings
+            },
+            {
+                "PipManage": PipManage,
+                "PipManage.__version__": PipManage.__version__
+            }
+        ]
+        return return_list
 
     @staticmethod
     @atexit.register
@@ -288,10 +330,10 @@ class Logger:
                     return
 
                 with open(
-                    "./logs/"
-                    + (name := (Logger.str_start_time + f".{Logger.__suffix}.log")),
-                    "w",
-                    encoding="UTF-8",
+                        "./logs/"
+                        + (name := (Logger.str_start_time + f".{Logger.__suffix}.log")),
+                        "w",
+                        encoding="UTF-8",
                 ) as f:
                     f.write(Logger.instance.log_text)
 
@@ -306,9 +348,9 @@ class Logger:
             traceback_console = Console(file=sys.stderr, width=100)
 
             def excepthook(
-                type_: Type[BaseException],
-                value: BaseException,
-                traceback: Optional[TracebackType],
+                    type_: Type[BaseException],
+                    value: BaseException,
+                    traceback: Optional[TracebackType],
             ) -> None:
 
                 exception = Traceback.from_exception(
@@ -347,13 +389,13 @@ class Logger:
 
                 traceback_console.print(exception_no_local)
                 for exc in exception.__rich_console__(
-                    traceback_console, traceback_console.options
+                        traceback_console, traceback_console.options
                 ):
                     if isinstance(exc, rich.traceback.Constrain):
                         panel = exc.renderable
 
                         for thing in panel.__rich_console__(
-                            traceback_console, traceback_console.options
+                                traceback_console, traceback_console.options
                         ):
                             logger.write(thing.text)
 
@@ -389,7 +431,7 @@ def log__init__(osc_in: ObjectStateConstant, pip_in: PipManage) -> None:
     else:
         pip_list = "Amount is bigger than default, so there's no output."
 
-    if pip_manage.detect_pip:
+    if pip_manage.is_detect_pip:
         if pip_manage.pip_detect() is True:
             pip_check = "All lib is already done."
         else:
@@ -397,6 +439,13 @@ def log__init__(osc_in: ObjectStateConstant, pip_in: PipManage) -> None:
     else:
         pip_check = "Don't use pip check."
 
+    if pip_manage.is_install_pip:
+        if pip_manage.pip_install() is True and pip_manage.pip_detect() is not True:
+            logger.info("Pip manage Class has already downloaded the requirements’ packages and libraries.")
+
+
+osc_: ObjectStateConstant = ObjectStateConstant()
+pip_manage_: PipManage = PipManage()
 
 logger = Logger()
 logger.register_traceback()
@@ -410,6 +459,7 @@ CRITICAL: Literal["CRITICAL"] = "CRITICAL"  # 致命异常，将终止程序
 __all__ = [
     "logger",
     "osc_",
+    "pip_manage_",
     "DEBUG",
     "INFO",
     "WARNING",
@@ -419,5 +469,3 @@ __all__ = [
     "__version__",
     "log__init__",
 ]
-
-osc_: ObjectStateConstant = ObjectStateConstant()
