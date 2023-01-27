@@ -1,0 +1,65 @@
+开发日志
+
+前置开发：
+Part 1 bgArrayLogger
+Part 2 万花 的 logger
+
+正式开发：
+2023/1/25 "first update" [by bgArray] (v0.3.5)
++8 .gitignore
++23 Introduction.md
++1 -1 LICENSE 修改协议
++329 __init__.py 新框架更新
++35 logConstant.py 设置报错格式常量，headline、license模板，权重列表
++25 objectConstant.py 加入OC
++24 test.py 加入测试模块
+
+2023/1/26 "add .gitattributes." [by bgArray]
++3 .gitattributes
+
+2023/1/26 "update 2023/1/26 bug fixed" [by bgArray]
+-3 logConstant.py
++10 -30 __init__.py 修复bug和删除bug：1.删除自定义行宽功能，因为在rich框架下实现无效
+                    新增：1.更好的分界线：用rich库自带分界线功能完成配置
+
+2023/1/27 "update 2023/1/27 Major updates" [by bgArray] (v0.4.5)
++123 -17 __init__.py 修复bug和删除bug：1.修改new函数，使logger实例化后仍能修改self对象，避免出现bug
+                     新增：
+                     1.新增pip类，支持读入requirements.txt或写入需求库列表和当前环境做比较，若无误则返回True，不一样，
+                     则按照：{"need": xxx, "have": yyy}形式说明，若版本冲突，则yyy为str；
+                     若缺少库，则yyy为None；也支持显示本环境下所有库
+
+                     2.新增release模式，可以输出运行平台，python版本，编码版本等，可以搭载pip类显示
+
+                     3.更好的单条信息：新增每条代码的原位置，在显示模式中以<a.py-b: c>形式显示，a为模块，b为函数或类，
+                     也可能没有，为<module>，c为行数；写入模式下尖括号为方括号
++107 -5 logConstant.py
++2 objectConstant.py
++10 -3 test.py
+
+2023/1/27 "去重合" - "!1 合并-辣条2023/1/27-1" [by FedDragon1]
++4 .gitignore
++141 -133 __init__.py
++5 -5 test.py 优化：1.变量名及函数 2.优化获取上级代码 3.测试其他环境运行程序情况
+
+2023/1/27 "snake" [by FedDragon1]
+(仓库) +162 -162 优化：将所有变量蛇形
+(仓库) +29 -29 优化：模块重命名
+
+2023/1/27 修改仓库地址
+
+2023/1/27 "update 2023/1/27 new thing" [by bgArray] (v0.5.0)
++110 -62 __init__.py
++76 -14 logger_constants.py
++14 -2 object_constants.py
++22 -11 test.py 优化：1.格式化 2.运许test.py本地运行
+                新增：1.返回日志默认参数的函数（没啥卵用）
+                2.支持自动安装pip包
+
+2023/1/27 "update 2023/1/27 bug fixed" [by bgArray]
++9 debug.pydll 这是个测试文件，有bug直接把这个代码贴到指定位置debug
++15 -8 logger_constants.py 修复bug和删除bug：1.把pip识别匹配的问题给去掉
+
+2023/1/27 "update 2023/1/27 log update" [bgArray]
++2 -2 logger_constants.py 优化：1.格式
++66 DevelopLog.txt 新增开发日志
