@@ -112,20 +112,24 @@ class PipManage:
                     break
                 elif str(item.project_name) in str(i):
                     if str(i).count("==") == 0:
-                        self.set_lst.remove(i)
-                        break
+                        if str(i)[:str(i).find("==")] == str(item.project_name):
+                            self.set_lst.remove(i)
+                            break
                     else:
-                        return_list.append({"need": str(i), "have": str(item.project_name) + "==" + str(item.version)})
-                        self.set_lst.remove(i)
-                        break
+                        if str(item.project_name) == str(i)[:str(i).find("==")]:
+                            return_list.append({"need": str(i), "have": str(item.project_name) + "==" + str(item.version)})
+                            self.set_lst.remove(i)
+                            break
                 elif str(i) in (str(item.project_name) + "==" + str(item.version)):
                     if str(i).count("==") == 0:
                         self.set_lst.remove(i)
                         break
                 elif str(i).lower() in (str(item.project_name).lower() + "==" + str(item.version)):
-                    if str(i).count("==") == 0:
-                        self.set_lst.remove(i)
-                        break
+                    self.set_lst.remove(i)
+                    break
+                elif str(i).upper() in (str(item.project_name).upper() + "==" + str(item.version)):
+                    self.set_lst.remove(i)
+                    break
 
         if self.set_lst.__len__() == 0 and return_list.__len__() == 0:  # 无版本不匹配及库缺失
             self.set_lst = []
@@ -133,6 +137,8 @@ class PipManage:
             return True
         else:
             for i in self.set_lst:
+                if "@ file:" in i:
+                    continue
                 return_list.append({"need": str(i), "have": None})
             self.detect_report = return_list
             return return_list
@@ -189,6 +195,7 @@ class PipManage:
             for i in self.detect_report:
                 if i["have"] is None:
                     command = "pip install " + str(i["need"])
+                    print(command)
                     os.system(command)
             if self.pip_detect():
                 return True
