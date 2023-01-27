@@ -117,7 +117,8 @@ class PipManage:
                             break
                     else:
                         if str(item.project_name) == str(i)[:str(i).find("==")]:
-                            return_list.append({"need": str(i), "have": str(item.project_name) + "==" + str(item.version)})
+                            return_list.append({"need": str(i),
+                                                "have": str(item.project_name) + "==" + str(item.version)})
                             self.set_lst.remove(i)
                             break
                 elif str(i) in (str(item.project_name) + "==" + str(item.version)):
@@ -195,7 +196,6 @@ class PipManage:
             for i in self.detect_report:
                 if i["have"] is None:
                     command = "pip install " + str(i["need"])
-                    print(command)
                     os.system(command)
             if self.pip_detect():
                 return True
