@@ -60,13 +60,15 @@ class PipManage:
     """
     管理Pip的类，一个Project一个即可
     """
+
     __version__ = "v0.2.5"
 
-    def __init__(self,
-                 is_detect_pip: bool = False,
-                 is_install_pip: bool = False,
-                 max_printing_lib_count: int = 20,
-                 ):
+    def __init__(
+        self,
+        is_detect_pip: bool = False,
+        is_install_pip: bool = False,
+        max_printing_lib_count: int = 20,
+    ):
         """
         实例化对象
         :param is_detect_pip: logger库 是否启用检测pip安装情况
@@ -96,7 +98,9 @@ class PipManage:
         :return:
         """
         for item in self.lst:
-            yield str(item.project_name), str(item.version), list(item.requires())  # 包名和版本 , 所依赖的其他包
+            yield str(item.project_name), str(item.version), list(
+                item.requires()
+            )  # 包名和版本 , 所依赖的其他包
 
     def pip_detect(self) -> Union[bool, list[dict[str, str]], list[dict[str, None]]]:
         """
@@ -112,23 +116,33 @@ class PipManage:
                     break
                 elif str(item.project_name) in str(i):
                     if str(i).count("==") == 0:
-                        if str(i)[:str(i).find("==")] == str(item.project_name):
+                        if str(i)[: str(i).find("==")] == str(item.project_name):
                             self.set_lst.remove(i)
                             break
                     else:
-                        if str(item.project_name) == str(i)[:str(i).find("==")]:
-                            return_list.append({"need": str(i),
-                                                "have": str(item.project_name) + "==" + str(item.version)})
+                        if str(item.project_name) == str(i)[: str(i).find("==")]:
+                            return_list.append(
+                                {
+                                    "need": str(i),
+                                    "have": str(item.project_name)
+                                    + "=="
+                                    + str(item.version),
+                                }
+                            )
                             self.set_lst.remove(i)
                             break
                 elif str(i) in (str(item.project_name) + "==" + str(item.version)):
                     if str(i).count("==") == 0:
                         self.set_lst.remove(i)
                         break
-                elif str(i).lower() in (str(item.project_name).lower() + "==" + str(item.version)):
+                elif str(i).lower() in (
+                    str(item.project_name).lower() + "==" + str(item.version)
+                ):
                     self.set_lst.remove(i)
                     break
-                elif str(i).upper() in (str(item.project_name).upper() + "==" + str(item.version)):
+                elif str(i).upper() in (
+                    str(item.project_name).upper() + "==" + str(item.version)
+                ):
                     self.set_lst.remove(i)
                     break
 
@@ -144,9 +158,11 @@ class PipManage:
             self.detect_report = return_list
             return return_list
 
-    def detecting_setting(self,
-                          requirements_list: list[pkg_resources.Requirement.parse] = None,
-                          requirements_path: str = None) -> None:
+    def detecting_setting(
+        self,
+        requirements_list: list[pkg_resources.Requirement.parse] = None,
+        requirements_path: str = None,
+    ) -> None:
         """
         设置要检测的对象，注意两个参数填一个且只有一个就好，建议使用path
         :param requirements_list: 传入[Requirement.parse('matplotlib'), Requirement.parse('mido')]这样的列表
@@ -163,14 +179,23 @@ class PipManage:
             requirements_string: str = self.open_req(requirements_path)
             REs = []
             for i in range(requirements_string.count("\n")):
-                if requirements_string != "" and requirements_string != "\n" and requirements_string != " " and \
-                        requirements_string[:1] != "\n":
-                    Re = pkg_resources.Requirement.parse(requirements_string[:requirements_string.find("\n")])
+                if (
+                    requirements_string != ""
+                    and requirements_string != "\n"
+                    and requirements_string != " "
+                    and requirements_string[:1] != "\n"
+                ):
+                    Re = pkg_resources.Requirement.parse(
+                        requirements_string[: requirements_string.find("\n")]
+                    )
                     REs.append(Re)
                     requirements_string = requirements_string.replace(
-                        requirements_string[:requirements_string.find("\n")] + "\n", "")
+                        requirements_string[: requirements_string.find("\n")] + "\n", ""
+                    )
                 else:
-                    requirements_string = requirements_string.replace("\n", "", 1).replace(" ", "")
+                    requirements_string = requirements_string.replace(
+                        "\n", "", 1
+                    ).replace(" ", "")
             requirements_string = requirements_string.replace("\n", "").replace(" ", "")
             if requirements_string != "":
                 REs.append(pkg_resources.Requirement.parse(requirements_string))

@@ -1,6 +1,7 @@
 import TrimLog
 from TrimLog import object_constants
 from TrimLog import log__init__, logger
+
 # import test1
 # from loggerT.TriMOLogger import *
 
@@ -28,7 +29,9 @@ pm.is_detect_pip = False
 log__init__(osc, pm)
 
 logger.info("a")
-logger.license_shower("libA", "GPL3.0", "Copyright 2023 xxx", "v0.0.1", "This lib is xxx.", True)
+logger.license_shower(
+    "libA", "GPL3.0", "Copyright 2023 xxx", "v0.0.1", "This lib is xxx.", True
+)
 logger.include_release_info = True
 logger.baseinfo_shower()
 

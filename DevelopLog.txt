@@ -63,3 +63,6 @@ Part 2 万花 的 logger
 2023/1/27 "update 2023/1/27 log update" [bgArray]
 +2 -2 logger_constants.py 优化：1.格式
 +66 DevelopLog.txt 新增开发日志
+
+2023/1/28 "update 2023/1/28 blacking codes" [bgArray] (v0.5.4)
+格式化代码，修改版本号
