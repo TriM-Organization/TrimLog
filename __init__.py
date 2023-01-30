@@ -41,7 +41,7 @@ from rich.traceback import Traceback
 from .logger_constants import *
 from .object_constants import *
 
-__version__: str = "v0.5.4"
+__version__: str = "v0.5.8"
 T = TypeVar("T")
 L = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
@@ -60,22 +60,28 @@ class Logger:
     console: Console = Console()
     __suffix = "dsl"
     is_logging = True
+
+    is_tips = False
+    tips_dict: list = []
+
     max_log_count: int = 20
 
     def __new__(
-        cls,
-        is_logging: bool = True,
-        printing: bool = True,
-        writing: bool = True,
-        print_level: L = "DEBUG",
-        write_level: L = "INFO",
-        include_headline: bool = True,
-        include_license: bool = True,
-        headline_level: L = "WARNING",
-        license_level: L = "WARNING",
-        max_log_count: int = 20,
-        include_release_info: bool = False,
-        show_position: bool = True,
+            cls,
+            is_logging: bool = True,
+            printing: bool = True,
+            writing: bool = True,
+            print_level: L = "DEBUG",
+            write_level: L = "INFO",
+            include_headline: bool = True,
+            include_license: bool = True,
+            headline_level: L = "WARNING",
+            license_level: L = "WARNING",
+            max_log_count: int = 20,
+            include_release_info: bool = False,
+            show_position: bool = True,
+            is_auto_headline: bool = False,
+            is_tips: bool = True,
     ) -> Logger:
         if cls.instance is not None:
             return cls.instance
@@ -83,25 +89,32 @@ class Logger:
         return cls.instance
 
     def __init__(
-        self,
-        is_logging: bool = True,
-        printing: bool = True,
-        writing: bool = True,
-        print_level: L = "DEBUG",
-        write_level: L = "INFO",
-        include_headline: bool = True,
-        include_license: bool = True,
-        headline_level: L = "WARNING",
-        license_level: L = "WARNING",
-        max_log_count: int = 20,
-        include_release_info: bool = False,
-        show_position: bool = False,
+            self,
+            is_logging: bool = True,
+            printing: bool = True,
+            writing: bool = True,
+            print_level: L = "DEBUG",
+            write_level: L = "INFO",
+            include_headline: bool = True,
+            include_license: bool = True,
+            headline_level: L = "WARNING",
+            license_level: L = "WARNING",
+            max_log_count: int = 20,
+            include_release_info: bool = False,
+            show_position: bool = False,
+            is_auto_headline: bool = False,
+            is_tips: bool = True,
     ) -> None:
         self.log_text: str = ""
 
         # 总开关，根据OSC
         self.is_logging = is_logging
         Logger.is_logging = is_logging
+
+        # 报错是否给出提示帮助
+        self.is_tips = is_tips
+        Logger.is_tips = is_tips
+        self.tips_dict = []
 
         # 是否需要输出一些开发时不需要输出的内容；但是用户使用时需要输出的内容
         # 也就是Release版本到不同平台不同版本Python下需要增加的一些信息
@@ -128,18 +141,23 @@ class Logger:
         self.max_log_count: int = max_log_count
         Logger.max_log_count = self.max_log_count
 
+        # headline理论上只展示一次
+        self.headline_count = 0
+
         # 初始化展示headline
-        self.headline_shower()
+        if is_auto_headline:
+            self.headline_shower()
 
     def log(
-        self,
-        info: T,
-        level: L,
-        frame_file: str = None,
-        frame_name: str = None,
-        frame_lineno: int = None,
+            self,
+            info: T,
+            level: L,
+            frame_file: str = None,
+            frame_name: str = None,
+            frame_lineno: int = None,
+            mandatory_use: bool = False,
     ) -> T:
-        if self.is_logging:
+        if self.is_logging or mandatory_use:
             style: Optional[str]
             style_len: Optional[int]
             style, style_len = getattr(_Level, level, (None, None))
@@ -217,11 +235,17 @@ class Logger:
         if self.is_logging:
             self.log_text += text
 
-    def headline_shower(self):
-        global __version__, pip_manage_
-        if self.include_headline:
+    def headline_shower(self, mandatory_use: bool = False):
+        global __version__, pip_manage_, osc_
+        if (
+                self.include_headline is True and self.headline_count < 1
+        ) or mandatory_use is True:
             self.console.rule("[bold red]Headline")
-            self.log(HEADLINE_STRUCTURE.format(__version__), self.headline_level)
+            self.log(
+                HEADLINE_STRUCTURE.format(osc_.project_name, osc_.version, __version__),
+                self.headline_level,
+                mandatory_use=True,
+            )
 
             license_thing = LICENSE_STRUCTURE.format(
                 "Pip manage Lib",
@@ -231,11 +255,13 @@ class Logger:
                 "",
             )
             self.console.rule("[bold red]License for " + "Pip manage Lib")
-            self.log(license_thing, self.license_level)
+            self.log(license_thing, self.license_level, mandatory_use=True)
+
+            self.headline_count += 1
 
     def baseinfo_shower(self):
-        global py_version, py_sys_version, py_sys_version_info, pip_list, pip_check, default_encoding, running_path, \
-            file_system_encoding, py_platform
+        global py_version, py_sys_version, py_sys_version_info, pip_list, pip_check, \
+            default_encoding, running_path, file_system_encoding, py_platform
         if self.include_release_info and self.is_logging:
             self.console.rule("[bold red]BaseInfo")
             self.log(
@@ -254,13 +280,13 @@ class Logger:
             )
 
     def license_shower(
-        self,
-        lib_name: str,
-        license_name: str,
-        license_line: str,
-        lib_version: str,
-        addition: str = "",
-        include_startline: bool = True,
+            self,
+            lib_name: str,
+            license_name: str,
+            license_line: str,
+            lib_version: str,
+            addition: str = "",
+            include_startline: bool = True,
     ):
         if self.include_license and self.is_logging:
             license_thing = LICENSE_STRUCTURE.format(
@@ -269,6 +295,10 @@ class Logger:
             if include_startline:
                 self.console.rule("[bold red]License for " + lib_name)
             self.log(license_thing, self.license_level)
+
+    def tips_set(self, in_dict: list):
+        self.tips_dict = in_dict
+        Logger.tips_dict = self.tips_dict
 
     @staticmethod
     def default_value_return():
@@ -324,10 +354,10 @@ class Logger:
                     return
 
                 with open(
-                    "./logs/"
-                    + (name := (Logger.str_start_time + f".{Logger.__suffix}.log")),
-                    "w",
-                    encoding="UTF-8",
+                        "./logs/"
+                        + (name := (Logger.str_start_time + f".{Logger.__suffix}.log")),
+                        "w",
+                        encoding="UTF-8",
                 ) as f:
                     f.write(Logger.instance.log_text)
 
@@ -337,14 +367,49 @@ class Logger:
                 Logger.instance.log(f'日志保存失败："{e}"', "ERROR")
 
     @staticmethod
+    @atexit.register
+    def tips() -> None:
+        global osc_
+        if (Logger.is_logging and osc_.isRelease) or Logger.is_tips:
+            log_t = Logger.instance.log_text
+            tips_d = Logger.tips_dict
+            del_t = (
+                    "┌" + "─" * 31 + " Traceback (most recent call last) " + "─" * 32 + "┐"
+            )
+            end_t = "└" + "─" * 98 + "┘"
+
+            clean_t = (
+                log_t[log_t.find(del_t) + 100:].replace("│ │", "").replace("│", "")
+            )
+
+            end_error_text = log_t[log_t.find(end_t) + 100:].replace("\n", "")
+            error_position = (
+                clean_t[: clean_t.find("\n", 2)].replace("\n", "")[1:].replace("  ", "")
+            )
+            error_position = error_position[error_position.rfind("\\") + 1:]
+
+            if tips_d is not []:
+                for i in tips_d:
+                    # noinspection PyBroadException
+                    try:
+                        if (
+                                error_position == i["position"]
+                                and end_error_text == i["error_text"]
+                        ):
+                            print(i["tips"])
+                            Logger.instance.log_text += i["tips"] + "\n"
+                    except BaseException:
+                        pass
+
+    @staticmethod
     def register_traceback() -> None:
         if Logger.is_logging:
             traceback_console = Console(file=sys.stderr, width=100)
 
             def excepthook(
-                type_: Type[BaseException],
-                value: BaseException,
-                traceback: Optional[TracebackType],
+                    type_: Type[BaseException],
+                    value: BaseException,
+                    traceback: Optional[TracebackType],
             ) -> None:
 
                 exception = Traceback.from_exception(
@@ -383,13 +448,13 @@ class Logger:
 
                 traceback_console.print(exception_no_local)
                 for exc in exception.__rich_console__(
-                    traceback_console, traceback_console.options
+                        traceback_console, traceback_console.options
                 ):
                     if isinstance(exc, rich.traceback.Constrain):
                         panel = exc.renderable
 
                         for thing in panel.__rich_console__(
-                            traceback_console, traceback_console.options
+                                traceback_console, traceback_console.options
                         ):
                             logger.write(thing.text)
 
@@ -416,6 +481,10 @@ def log__init__(osc_in: ObjectStateConstant, pip_in: PipManage) -> None:
     global osc_, logger, pip_list, pip_check
     osc_ = osc_in
     logger.is_logging = osc_.isLoggingUsing
+    if osc_.isRelease:
+        logger.headline_shower(mandatory_use=True)
+    else:
+        logger.headline_shower()
 
     pip_manage: PipManage = pip_in
 

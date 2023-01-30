@@ -13,11 +13,13 @@ SUPPRESS = ()
 MAX_FRAMES: int = 100
 
 # Headline definitions
-# {}:版本号
+# {0}{1}:使用程序名称及版本号，由oc管理
+# {2}:logger版本号
 HEADLINE_STRUCTURE: str = """ 
+{0} {1}
 Using TrimLog Library by Apache2.0 License.
 Copyright 2022-2023 all the developers of Kaleido and Trim Organization.(FedDragon1, Eilles Wan, bgArray)
-Library Version: {}
+Library Version: {2}
 """
 
 # License template

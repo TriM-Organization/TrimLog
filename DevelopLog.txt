@@ -66,3 +66,6 @@ Part 2 万花 的 logger
 
 2023/1/28 "update 2023/1/28 blacking codes" [bgArray] (v0.5.4)
 格式化代码，修改版本号
+
+2023/1/30 "update 2023/1/30 tips update" [bgArray] (v0.5.8)
+新增tips功能，优化

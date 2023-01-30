@@ -5,6 +5,7 @@ import rich.console
 class ObjectStateConstant(builtins.object):
     def __init__(self):
         self.debugging = True
+        self.project_name = ""
         self.version = "v0.0.1"
         self.version_tuple = (0, 0, 1)
         self.ParameterSelection = "default=self"
