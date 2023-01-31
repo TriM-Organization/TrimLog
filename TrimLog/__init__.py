@@ -41,7 +41,7 @@ from rich.traceback import Traceback
 from .logger_constants import *
 from .object_constants import *
 
-__version__: str = "v0.6.2"
+__version__: str = "v0.6.3"
 T = TypeVar("T")
 L = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
@@ -83,6 +83,24 @@ class Logger:
             is_auto_headline: bool = False,
             is_tips: bool = True,
     ) -> Logger:
+        """
+        __new__() method. Don't change it unless you need.
+        :param is_logging: use logger or not. Notice that this is the main switch of Logger class.
+        :param printing: print on the screen or not.
+        :param writing: write into file or not.
+        :param print_level: a level that's used to limit the print.
+        :param write_level: a level that's used to limit the output files.
+        :param include_headline: allow to use the function headline_shower() or not.
+        :param include_license: allow to use the function license_shower() or not.
+        :param headline_level: choose which level to output the headline.
+        :param license_level: choose which level to output the license.
+        :param max_log_count: a number that's used to set the maximum number of log files.
+        :param include_release_info: allow to use the function baseinfo_shower() or not.
+        :param show_position: allow to show the running codes position or not.
+        :param is_auto_headline: allow to print headline when the logger is initializing or not.
+        The best choice is false.
+        :param is_tips: allow to show some tips when the program have errors or not.
+        """
         if cls.instance is not None:
             return cls.instance
         cls.instance = super().__new__(cls)
@@ -105,6 +123,25 @@ class Logger:
             is_auto_headline: bool = False,
             is_tips: bool = True,
     ) -> None:
+        """
+        __init__() method. Don't change it unless you need.
+        :param is_logging: use logger or not. Notice that this is the main switch of Logger class.
+        :param printing: print on the screen or not.
+        :param writing: write into file or not.
+        :param print_level: a level that's used to limit the print.
+        :param write_level: a level that's used to limit the output files.
+        :param include_headline: allow to use the function headline_shower() or not.
+        :param include_license: allow to use the function license_shower() or not.
+        :param headline_level: choose which level to output the headline.
+        :param license_level: choose which level to output the license.
+        :param max_log_count: a number that's used to set the maximum number of log files.
+        :param include_release_info: allow to use the function baseinfo_shower() or not.
+        :param show_position: allow to show the running codes position or not.
+        :param is_auto_headline: allow to print headline when the logger is initializing or not.
+        The best choice is false.
+        :param is_tips: allow to show some tips when the program have errors or not.
+        """
+        # 写入文件的内容
         self.log_text: str = ""
 
         # 总开关，根据OSC
@@ -152,11 +189,21 @@ class Logger:
             self,
             info: T,
             level: L,
+            mandatory_use: bool = False,
             frame_file: str = None,
             frame_name: str = None,
             frame_lineno: int = None,
-            mandatory_use: bool = False,
     ) -> T:
+        """
+        log output base function.
+        :param info: things you want to output.
+        :param level: the log output level.
+            :param mandatory_use: allow to use this function while "self.is_logging" is False.
+        :param frame_file: initiation program's file name.
+        :param frame_name: initiation program's function name.
+        :param frame_lineno: initiation program's line number.
+        :return: things you input.
+        """
         if self.is_logging or mandatory_use:
             style: Optional[str]
             style_len: Optional[int]
@@ -204,12 +251,20 @@ class Logger:
 
         return info
 
-    def set_default_weight(self):
+    def set_default_weight(self) -> None:
+        """
+        refresh weight datas.
+        """
+        # TODO: 把这里改为@name
         self.print_default_weight = WEIGHT_ORDER.get(self.print_level)
         self.write_default_weight = WEIGHT_ORDER.get(self.write_level)
 
     @staticmethod
-    def get_detail_info():
+    def get_detail_info() -> tuple[str, str, int]:
+        """
+        get initiation program datas.
+        :return: initiation program's file name, initiation program's function name, initiation program's line number.
+        """
         back_frame = sys._getframe().f_back.f_back  # 上一帧=debug/info/..., 上上帧=目标函数
         back_file_name: str = os.path.basename(back_frame.f_code.co_filename)
         back_func_name: str = back_frame.f_code.co_name
@@ -217,25 +272,59 @@ class Logger:
         return back_file_name, back_func_name, back_line_number
 
     def debug(self, debug: T) -> T:
+        """
+        output log that's "debug" level.
+        :param debug: things you want to output.
+        :return:things you want to output.
+        """
         return self.log(debug, "DEBUG", *self.get_detail_info())
 
     def info(self, info: T) -> T:
+        """
+        output log that's "info" level.
+        :param info: things you want to output.
+        :return: things you want to output.
+        """
         return self.log(info, "INFO", *self.get_detail_info())
 
     def warning(self, warning: T) -> T:
+        """
+        output log that's "warning" level.
+        :param warning: things you want to output.
+        :return: things you want to output.
+        """
         return self.log(warning, "WARNING", *self.get_detail_info())
 
     def error(self, error: T) -> T:
+        """
+        output log that's "error" level.
+        :param error: things you want to output.
+        :return: things you want to output.
+        """
         return self.log(error, "ERROR", *self.get_detail_info())
 
     def critical(self, critical: T) -> T:
+        """
+        output log that's "critical" level.
+        :param critical: things you want to output.
+        :return: things you want to output.
+        """
         return self.log(critical, "CRITICAL", *self.get_detail_info())
 
     def write(self, text: str) -> None:
+        """
+        write things into self.log_text.
+        :param text: things
+        """
         if self.is_logging:
             self.log_text += text
 
-    def headline_shower(self, mandatory_use: bool = False):
+    def headline_shower(self, mandatory_use: bool = False) -> None:
+        """
+        show this library's headline.
+        :param mandatory_use: mandatory use, which means not subject to self.include_headline and self.headline_count
+        control
+        """
         global __version__, pip_manage_, osc_
         if (
                 self.include_headline is True and self.headline_count < 1
@@ -259,7 +348,11 @@ class Logger:
 
             self.headline_count += 1
 
-    def baseinfo_shower(self):
+    def baseinfo_shower(self) -> None:
+        """
+        show:running platform, Python version, Python cmd version, Python version info, program location,
+        default encoding, file system encoding, pip list, pip check.
+        """
         global py_version, py_sys_version, py_sys_version_info, pip_list, pip_check, \
             default_encoding, running_path, file_system_encoding, py_platform
         if self.include_release_info and self.is_logging:
@@ -287,7 +380,17 @@ class Logger:
             lib_version: str,
             addition: str = "",
             include_startline: bool = True,
-    ):
+    ) -> None:
+        """
+        show a specified license
+        :param lib_name: what's your importing lib's name?
+        :param license_name: what's your importing lib's license?
+        :param license_line: copy your importing lib's license show information. Be like:
+        Copyright 2022-2023 all the developers of Trim Organization.(FedDragon1, Eilles Wan, bgArray)
+        :param lib_version: what's your importing lib's version?
+        :param addition: if there's something you want to add, fill in this blank. (if not, please keep "")
+        :param include_startline: to show a line before the main text or not.
+        """
         if self.include_license and self.is_logging:
             license_thing = LICENSE_STRUCTURE.format(
                 lib_name, license_name, license_line, lib_version, addition
@@ -296,12 +399,21 @@ class Logger:
                 self.console.rule("[bold red]License for " + lib_name)
             self.log(license_thing, self.license_level)
 
-    def tips_set(self, in_dict: list):
+    def tips_set(self, in_dict: list) -> None:
+        """
+        set tips dict.
+        :param in_dict: input your tips formatting dict.
+        """
+        # TODO: 把这里改为@name
         self.tips_dict = in_dict
         Logger.tips_dict = self.tips_dict
 
     @staticmethod
-    def default_value_return():
+    def default_value_return() -> list:
+        """
+        to return our library default values.
+        :return: a list.
+        """
         return_list = [
             {
                 "WIDTH": WIDTH,
@@ -327,6 +439,9 @@ class Logger:
     @staticmethod
     @atexit.register
     def save() -> None:
+        """
+        to save log's function.
+        """
         if Logger.is_logging:
             try:
                 list_of_files = os.listdir("logs")
@@ -369,6 +484,9 @@ class Logger:
     @staticmethod
     @atexit.register
     def tips() -> None:
+        """
+        add tips' function.
+        """
         global osc_
         if (Logger.is_logging and osc_.isRelease) or Logger.is_tips:
             log_t = Logger.instance.log_text
@@ -403,6 +521,9 @@ class Logger:
 
     @staticmethod
     def register_traceback() -> None:
+        """
+        register traceback function.
+        """
         if Logger.is_logging:
             traceback_console = Console(file=sys.stderr, width=100)
 
@@ -478,12 +599,19 @@ pip_check: str
 
 
 def log__init__(osc_in: ObjectStateConstant, pip_in: PipManage) -> None:
+    """
+    to initialize logger.
+    :param osc_in: need a OSC class.
+    :param pip_in: need a PM class.
+    """
     global osc_, logger, pip_list, pip_check
     osc_ = osc_in
     logger.is_logging = osc_.isLoggingUsing
     if osc_.isRelease:
+        logger.include_release_info = True
         logger.headline_shower(mandatory_use=True)
     else:
+        logger.include_release_info = False
         logger.headline_shower()
 
     pip_manage: PipManage = pip_in
