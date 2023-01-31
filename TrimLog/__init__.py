@@ -41,7 +41,7 @@ from rich.traceback import Traceback
 from .logger_constants import *
 from .object_constants import *
 
-__version__: str = "v0.5.8"
+__version__: str = "v0.6.2"
 T = TypeVar("T")
 L = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
