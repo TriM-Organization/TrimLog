@@ -73,5 +73,9 @@ Part 2 万花 的 logger
 2023/1/31 "update 2023/1/31 pypi update" [bgArray] (v0.6.2)
 运行pip安装，优化结构
 
-2023/1/32 "update 2023/1/31 annotations update1" [bgArray] (v0.6.3)
+2023/1/31 "update 2023/1/31 annotations update1" [bgArray] (v0.6.3)
 完成__init__.py的函数注释
+
+2023/1/31 "update 2023/1/31 annotations update2" [bgArray] (v0.6.4)
+增加更新.bat
+完成其他两个模块注释

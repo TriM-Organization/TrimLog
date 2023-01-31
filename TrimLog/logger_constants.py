@@ -63,7 +63,7 @@ class PipManage:
     管理Pip的类，一个Project一个即可
     """
 
-    __version__ = "v0.2.5"
+    __version__ = "v0.2.6"
 
     def __init__(
         self,
@@ -205,6 +205,11 @@ class PipManage:
 
     @staticmethod
     def open_req(path: str) -> str:
+        """
+        打开requirements.txt
+        :param path: requirements.txt path
+        :return: str: thing
+        """
         try:
             f = open(path, mode="r", encoding="utf-16")
             return f.read(-1)
@@ -217,6 +222,10 @@ class PipManage:
             f.close()
 
     def pip_install(self) -> bool:
+        """
+        根据self.detect_report安装库
+        :return: True/False 表示是否全部安装正确
+        """
         if self.is_install_pip:
             if self.detect_report.__len__() == 0:
                 return True
