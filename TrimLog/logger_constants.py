@@ -237,3 +237,12 @@ class PipManage:
                 return True
             else:
                 return False
+
+
+# levels_setting
+class _Level:
+    DEBUG: tuple[str, int] = "[bright_cyan][DEBUG][/bright_cyan]", 27
+    INFO: tuple[str, int] = "[green][INFO][/green]", 15
+    WARNING: tuple[str, int] = "[gold3][WARNING][/gold3]", 15
+    ERROR: tuple[str, int] = "[dark_orange3][ERROR][/dark_orange3]", 29
+    CRITICAL: tuple[str, int] = "[red][CRITICAL][/red]", 11

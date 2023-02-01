@@ -84,3 +84,9 @@ Part 2 万花 的 logger
 更新关于staticmethod的东西
 优化结构
 为下一次更新做铺垫
+
+2023/2/1 "update 2023/2/1 structure update2" [bgArray & FedDragon1]
+ 4 files changed, 170 insertions(+), 761 deletions(-)
+ rewrite TrimLog/__init__.py (96%)
+ copy TrimLog/{__init__.py => logger_main.py} (81%)
+优化结构，优化注释，大改框架

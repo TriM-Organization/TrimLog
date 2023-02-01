@@ -37,7 +37,7 @@ log__init__(osc, pm)
 logger.include_headline = False
 logger.info("a")
 logger.license_shower(
-    "libA", "GPL3.0", "Copyright 2023 xxx", "v0.0.1", "This lib is xxx.", True
+    "libA", "GPL3.0", "Copyright 2023 xxx", "v0.0.1", "This lib is xxx."
 )
 logger.include_release_info = True
 logger.baseinfo_shower()
