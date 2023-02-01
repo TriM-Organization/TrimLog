@@ -43,6 +43,7 @@ from .logger_constants import *
 from .object_constants import *
 
 from .logger_constants import _Level
+from .pip_manager import *
 
 
 def set_version(thing: str) -> None:
