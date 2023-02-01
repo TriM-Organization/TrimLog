@@ -91,7 +91,7 @@ Part 2 万花 的 logger
  copy TrimLog/{__init__.py => logger_main.py} (81%)
 优化结构，优化注释，大改框架
 
-2023/2/1 "update 2023/2/1 structure update3" [bgArray & FedDragon1]
+2023/2/1 "update 2023/2/1 structure update3" [bgArray & FedDragon1] (v0.6.8)
  7 files changed, 279 insertions(+), 499 deletions(-)
  create mode 100644 TrimLog/exceptions.py
  rewrite TrimLog/logger_constants.py (83%)
