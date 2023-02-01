@@ -22,6 +22,8 @@ logger.include_release_info = True  # Release 模式
 # logger.include_headline = False
 log__init__(osc, pm)
 
+logger.suffix = ".abc"
+
 logger.baseinfo_shower()
 
 logger.info("nothing")
@@ -40,17 +42,15 @@ logger.license_shower(
 logger.include_release_info = True
 logger.baseinfo_shower()
 
-logger.print_level = TrimLog.CRITICAL
-logger.set_default_weight()
+logger.set_print_level = TrimLog.CRITICAL
 logger.info("b")
 logger.critical("c")
 
-logger.print_level = TrimLog.INFO
-logger.set_default_weight()
+logger.set_print_level = TrimLog.INFO
 logger.info(logger.default_value_return())
 
-logger.tips_set([{"position": "test.py:56 in <module>",
-                  "error_text": "ZeroDivisionError: division by zero",
-                  "tips": "除数为0了，你可以：1.  xxxx; 2.xxxx"}])
+logger.tips_list = [{"position": "test.py:58 in <module>",
+                     "error_text": "ZeroDivisionError: division by zero",
+                     "tips": "除数为0了，你可以：1.  xxxx; 2.xxxx"}]
 
 print(5 / 0)

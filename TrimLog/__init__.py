@@ -41,8 +41,8 @@ from rich.traceback import Traceback
 from .logger_constants import *
 from .object_constants import *
 
-__version__: str = "v0.6.4"
-T = TypeVar("T")
+__version__: str = "v0.6.5"
+T: TypeVar = TypeVar("T")
 L = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
 
@@ -55,16 +55,21 @@ class _Level:
 
 
 class Logger:
+    """
+    main logger class.
+    """
     instance: Logger = None
+    """
+    Logger.instance: used to get value for static method
+    """
+
     str_start_time: str = time.strftime("%Y-%m-%d %H_%M_%S")
+
     console: Console = Console()
-    __suffix = "dsl"
-    is_logging = True
-
-    is_tips = False
-    tips_dict: list = []
-
-    max_log_count: int = 20
+    """
+    Logger.console 
+    If you want to use rich in OSC, you should use: osc.get_console(logger.console)
+    """
 
     def __new__(
             cls,
@@ -82,6 +87,7 @@ class Logger:
             show_position: bool = True,
             is_auto_headline: bool = False,
             is_tips: bool = True,
+            in_suffix: str = ".dsl",
     ) -> Logger:
         """
         __new__() method. Don't change it unless you need.
@@ -100,6 +106,7 @@ class Logger:
         :param is_auto_headline: allow to print headline when the logger is initializing or not.
         The best choice is false.
         :param is_tips: allow to show some tips when the program have errors or not.
+        :param in_suffix: allow to set a suffix of file name. Be like: ".dsl" or "".
         """
         if cls.instance is not None:
             return cls.instance
@@ -122,6 +129,7 @@ class Logger:
             show_position: bool = False,
             is_auto_headline: bool = False,
             is_tips: bool = True,
+            in_suffix: str = ".dsl",
     ) -> None:
         """
         __init__() method. Don't change it unless you need.
@@ -140,18 +148,20 @@ class Logger:
         :param is_auto_headline: allow to print headline when the logger is initializing or not.
         The best choice is false.
         :param is_tips: allow to show some tips when the program have errors or not.
+        :param in_suffix: allow to set a suffix of file name. Be like: ".dsl" or "".
         """
         # 写入文件的内容
         self.log_text: str = ""
 
         # 总开关，根据OSC
         self.is_logging = is_logging
-        Logger.is_logging = is_logging
 
         # 报错是否给出提示帮助
         self.is_tips = is_tips
-        Logger.is_tips = is_tips
-        self.tips_dict = []
+        self.tips_list = []
+
+        # 后缀设置
+        self.suffix = in_suffix
 
         # 是否需要输出一些开发时不需要输出的内容；但是用户使用时需要输出的内容
         # 也就是Release版本到不同平台不同版本Python下需要增加的一些信息
@@ -176,7 +186,6 @@ class Logger:
 
         # 文件最多保存多少个后开始删除
         self.max_log_count: int = max_log_count
-        Logger.max_log_count = self.max_log_count
 
         # headline理论上只展示一次
         self.headline_count = 0
@@ -251,11 +260,28 @@ class Logger:
 
         return info
 
-    def set_default_weight(self) -> None:
+    @property
+    def set_print_level(self) -> L:
+        return self.print_level
+
+    @set_print_level.setter
+    def set_print_level(self, in_level: L) -> None:
+        self.print_level = in_level
+        self.__set_default_weight()
+
+    @property
+    def set_write_level(self) -> L:
+        return self.write_level
+
+    @set_write_level.setter
+    def set_write_level(self, in_level: L) -> None:
+        self.write_level = in_level
+        self.__set_default_weight()
+
+    def __set_default_weight(self) -> None:
         """
         refresh weight datas.
         """
-        # TODO: 把这里改为@name
         self.print_default_weight = WEIGHT_ORDER.get(self.print_level)
         self.write_default_weight = WEIGHT_ORDER.get(self.write_level)
 
@@ -353,8 +379,8 @@ class Logger:
         show:running platform, Python version, Python cmd version, Python version info, program location,
         default encoding, file system encoding, pip list, pip check.
         """
-        global py_version, py_sys_version, py_sys_version_info, pip_list, pip_check, \
-            default_encoding, running_path, file_system_encoding, py_platform
+        global py_version, py_sys_version, py_sys_version_info, pip_list, pip_check, default_encoding, \
+            running_path, file_system_encoding, py_platform
         if self.include_release_info and self.is_logging:
             self.console.rule("[bold red]BaseInfo")
             self.log(
@@ -399,15 +425,6 @@ class Logger:
                 self.console.rule("[bold red]License for " + lib_name)
             self.log(license_thing, self.license_level)
 
-    def tips_set(self, in_dict: list) -> None:
-        """
-        set tips dict.
-        :param in_dict: input your tips formatting dict.
-        """
-        # TODO: 把这里改为@name
-        self.tips_dict = in_dict
-        Logger.tips_dict = self.tips_dict
-
     @staticmethod
     def default_value_return() -> list:
         """
@@ -442,7 +459,7 @@ class Logger:
         """
         to save log's function.
         """
-        if Logger.is_logging:
+        if Logger.instance.is_logging:
             try:
                 list_of_files = os.listdir("logs")
             except FileNotFoundError:
@@ -450,7 +467,7 @@ class Logger:
             else:
                 full_path = ["logs/{0}".format(x) for x in list_of_files]
 
-                if len(list_of_files) >= Logger.max_log_count:
+                if len(list_of_files) >= Logger.instance.max_log_count:
                     oldest_file = min(full_path, key=os.path.getctime)
                     logger.log(f"移除最早的日志：{oldest_file!r}", INFO)
                     os.remove(oldest_file)
@@ -470,7 +487,7 @@ class Logger:
 
                 with open(
                         "./logs/"
-                        + (name := (Logger.str_start_time + f".{Logger.__suffix}.log")),
+                        + (name := (Logger.str_start_time + f"{Logger.instance.suffix}.log")),
                         "w",
                         encoding="UTF-8",
                 ) as f:
@@ -488,9 +505,9 @@ class Logger:
         add tips' function.
         """
         global osc_
-        if (Logger.is_logging and osc_.isRelease) or Logger.is_tips:
+        if (Logger.instance.is_logging and osc_.isRelease) or Logger.instance.is_tips:
             log_t = Logger.instance.log_text
-            tips_d = Logger.tips_dict
+            tips_d = Logger.instance.tips_list
             del_t = (
                     "┌" + "─" * 31 + " Traceback (most recent call last) " + "─" * 32 + "┐"
             )
@@ -524,7 +541,7 @@ class Logger:
         """
         register traceback function.
         """
-        if Logger.is_logging:
+        if Logger.instance.is_logging:
             traceback_console = Console(file=sys.stderr, width=100)
 
             def excepthook(
@@ -549,7 +566,7 @@ class Logger:
 
                 path = os.path.abspath("./logs/")
                 logger.log(
-                    f"出现严重错误，程序崩溃！详情请看 '{path + Logger.str_start_time}.{Logger.__suffix}.log'",
+                    f"出现严重错误，程序崩溃！详情请看 '{path + Logger.str_start_time}{Logger.instance.suffix}.log'",
                     CRITICAL,
                 )
 

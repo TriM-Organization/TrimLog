@@ -79,3 +79,8 @@ Part 2 万花 的 logger
 2023/1/31 "update 2023/1/31 annotations update2" [bgArray] (v0.6.4)
 增加更新.bat
 完成其他两个模块注释
+
+2023/2/1 "update 2023/2/1 structure update1" [bgArray]
+更新关于staticmethod的东西
+优化结构
+为下一次更新做铺垫
