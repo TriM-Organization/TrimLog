@@ -43,7 +43,11 @@ The Python project log and project management framework library for TriM Organiz
 
 ### 安装教程 Installation tutorial
 
-1.  cmd运行pip 安装即可使用(run `pip install -i https://pypi.python.org/simple TrimLog` in cmd)
+1. cmd运行pip 安装即可使用(run `pip install -i https://pypi.python.org/simple TrimLog` in cmd)
+   commands:(第一个安装；第二个更新；first used to install; second used to upgrade)
+   >`pip install -i https://pypi.python.org/simple TrimLog`
+   >
+   > `pip install -i https://pypi.python.org/simple TrimLog --upgrade`
 
 ### 使用说明 Instruction for use
 

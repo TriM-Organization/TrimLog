@@ -76,20 +76,21 @@ class Logger:
     def __new__(
             cls,
             is_logging: bool = True,
+            is_auto_headline: bool = False,
+            is_tips: bool = True,
             printing: bool = True,
             writing: bool = True,
-            print_level: L = "DEBUG",
-            write_level: L = "INFO",
             include_headline: bool = True,
             include_license: bool = True,
+            include_release_info: bool = False,
+            print_level: L = "DEBUG",
+            write_level: L = "INFO",
             headline_level: L = "WARNING",
             license_level: L = "WARNING",
             max_log_count: int = 20,
-            include_release_info: bool = False,
-            show_position: bool = True,
-            is_auto_headline: bool = False,
-            is_tips: bool = True,
+            show_position: bool = False,
             in_suffix: str = ".dsl",
+
     ) -> Logger:
         """
         __new__() method. Don't change it unless you need.
@@ -119,38 +120,39 @@ class Logger:
     def __init__(
             self,
             is_logging: bool = True,
+            is_auto_headline: bool = False,
+            is_tips: bool = True,
             printing: bool = True,
             writing: bool = True,
-            print_level: L = "DEBUG",
-            write_level: L = "INFO",
             include_headline: bool = True,
             include_license: bool = True,
+            include_release_info: bool = False,
+            print_level: L = "DEBUG",
+            write_level: L = "INFO",
             headline_level: L = "WARNING",
             license_level: L = "WARNING",
             max_log_count: int = 20,
-            include_release_info: bool = False,
             show_position: bool = False,
-            is_auto_headline: bool = False,
-            is_tips: bool = True,
             in_suffix: str = ".dsl",
+
     ) -> None:
         """
         __init__() method. Don't change it unless you need.
         :param is_logging: use logger or not. Notice that this is the main switch of Logger class.
-        :param printing: print on the screen or not.
-        :param writing: write into file or not.
-        :param print_level: a level that's used to limit the print.
-        :param write_level: a level that's used to limit the output files.
-        :param include_headline: allow to use the function headline_shower() or not.
-        :param include_license: allow to use the function license_shower() or not.
-        :param headline_level: choose which level to output the headline.
-        :param license_level: choose which level to output the license.
-        :param max_log_count: a number that's used to set the maximum number of log files.
-        :param include_release_info: allow to use the function baseinfo_shower() or not.
-        :param show_position: allow to show the running codes position or not.
         :param is_auto_headline: allow to print headline when the logger is initializing or not.
         The best choice is false.
         :param is_tips: allow to show some tips when the program have errors or not.
+        :param printing: print on the screen or not.
+        :param writing: write into file or not.
+        :param include_headline: allow to use the function headline_shower() or not.
+        :param include_license: allow to use the function license_shower() or not.
+        :param include_release_info: allow to use the function baseinfo_shower() or not.
+        :param print_level: a level that's used to limit the print.
+        :param write_level: a level that's used to limit the output files.
+        :param headline_level: choose which level to output the headline.
+        :param license_level: choose which level to output the license.
+        :param max_log_count: a number that's used to set the maximum number of log files.
+        :param show_position: allow to show the running codes position or not.
         :param in_suffix: allow to set a suffix of file name. Be like: ".dsl" or "".
         """
         # 写入文件的内容
@@ -210,7 +212,7 @@ class Logger:
         log output base function.
         :param info: things you want to output.
         :param level: the log output level.
-            :param mandatory_use: allow to use this function while "self.is_logging" is False.
+        :param mandatory_use: allow to use this function while "self.is_logging" is False.
         :param frame_file: initiation program's file name.
         :param frame_name: initiation program's function name.
         :param frame_lineno: initiation program's line number.
@@ -256,7 +258,8 @@ class Logger:
                     )
 
             # 打印模块(条件：启用打印；满足打印权重)
-            if self.printing and level_weight >= self.print_default_weight:
+            if (self.printing and level_weight >= self.print_default_weight) or \
+                    mandatory_use:
                 if self.show_position:
                     e_w = " <" + end_with.replace("\n", "") + "> "
                     add = style + e_w
@@ -319,58 +322,64 @@ class Logger:
         back_line_number: int = back_frame.f_lineno
         return back_file_name, back_func_name, back_line_number
 
-    def debug(self, debug: T) -> T:
+    def debug(self, debug: T, mandatory_use: bool = False, ) -> T:
         """
         output log that's "debug" level.
         :param debug: things you want to output.
+        :param mandatory_use: allow to use this function while "self.is_logging" is False.
         :return:things you want to output.
         """
-        return self.log(debug, "DEBUG", *self.get_detail_info())
+        return self.log(debug, "DEBUG", mandatory_use, *self.get_detail_info())
 
-    def info(self, info: T) -> T:
+    def info(self, info: T, mandatory_use: bool = False, ) -> T:
         """
         output log that's "info" level.
         :param info: things you want to output.
+        :param mandatory_use: allow to use this function while "self.is_logging" is False.
         :return: things you want to output.
         """
-        return self.log(info, "INFO", *self.get_detail_info())
+        return self.log(info, "INFO", mandatory_use, *self.get_detail_info())
 
-    def warning(self, warning: T) -> T:
+    def warning(self, warning: T, mandatory_use: bool = False, ) -> T:
         """
         output log that's "warning" level.
         :param warning: things you want to output.
+        :param mandatory_use: allow to use this function while "self.is_logging" is False.
         :return: things you want to output.
         """
-        return self.log(warning, "WARNING", *self.get_detail_info())
+        return self.log(warning, "WARNING", mandatory_use, *self.get_detail_info())
 
-    def error(self, error: T) -> T:
+    def error(self, error: T, mandatory_use: bool = False, ) -> T:
         """
         output log that's "error" level.
         :param error: things you want to output.
+        :param mandatory_use: allow to use this function while "self.is_logging" is False.
         :return: things you want to output.
         """
-        return self.log(error, "ERROR", *self.get_detail_info())
+        return self.log(error, "ERROR", mandatory_use, *self.get_detail_info())
 
-    def critical(self, critical: T) -> T:
+    def critical(self, critical: T, mandatory_use: bool = False, ) -> T:
         """
         output log that's "critical" level.
         :param critical: things you want to output.
+        :param mandatory_use: allow to use this function while "self.is_logging" is False.
         :return: things you want to output.
         """
-        return self.log(critical, "CRITICAL", *self.get_detail_info())
+        return self.log(critical, "CRITICAL", mandatory_use, *self.get_detail_info())
 
-    def write(self, text: str) -> None:
+    def write(self, text: str, mandatory_use: bool = False, ) -> None:
         """
         write things into self.log_text.
         :param text: things
+        :param mandatory_use: allow to use this function while "self.is_logging" is False.
         """
-        if self.is_logging:
+        if (self.is_logging and self.writing) or mandatory_use:
             self.log_text += text
 
     def headline_shower(self, mandatory_use: bool = False) -> None:
         """
         show this library's headline.
-        :param mandatory_use: mandatory use, which means not subject to self.include_headline and self.headline_count
+        :param mandatory_use: allow to use this function while "self.is_logging" is False and self.headline_count >= 1.
         control
         """
         global __version__, pip_manage_, osc_

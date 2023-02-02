@@ -100,3 +100,6 @@ Part 2 万花 的 logger
 
 2023/2/2 "update 2023/2/2 bug fixed" [Eilles Wan & bgArray & FedDragon1] (v0.6.9)
 兼容py3.8，优化注释
+
+2023/2/2 "update 2023/2/2 documents 1" [bgArray]
+文档更新1

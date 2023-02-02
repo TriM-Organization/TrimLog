@@ -29,9 +29,6 @@ import TrimLog
 from TrimLog import object_constants
 from TrimLog import log__init__, logger
 
-# import test1
-# from loggerT.TriMOLogger import *
-
 osc = object_constants.ObjectStateConstant()
 osc.isLoggingUsing = False
 osc.project_name = "Test Project"

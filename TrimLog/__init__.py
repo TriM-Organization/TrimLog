@@ -41,6 +41,8 @@ __all__ = [
     "WARNING",
     "ERROR",
     "CRITICAL",
+    "ObjectStateConstant",
+    "PipManage",
     "py_version",
     "__version__",
     "log__init__",

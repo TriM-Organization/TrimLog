@@ -24,7 +24,7 @@
 
        https://www.apache.org/licenses/LICENSE-2.0
 """
-import sys
+from sys import version_info
 from typing import Tuple
 
 from .exceptions import *
@@ -77,7 +77,7 @@ pip check: {8}
 
 # levels_setting
 class _Level:
-    if sys.version_info[0] != 3:
+    if version_info[0] != 3:
         raise PythonVersionError
     else:
         DEBUG: Tuple[str, int] = "[bright_cyan][DEBUG][/bright_cyan]", 27
