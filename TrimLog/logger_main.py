@@ -634,6 +634,7 @@ class Logger:
             sys.excepthook = excepthook
 
 
+# 获取基础信息
 py_version: str = platform.version()
 py_sys_version: str = sys.version
 py_sys_version_info: str = sys.version_info
@@ -653,11 +654,13 @@ def log__init__(osc_in: ObjectStateConstant, pip_in: PipManage) -> None:
     :param osc_in: need a OSC class.
     :param pip_in: need a PM class.
     """
+    # 直接用本地变量
     global osc_, logger, pip_list, pip_check
 
     # osc部分
     osc_ = osc_in
     logger.is_logging = osc_.isLoggingUsing  # 设置是否启用logger
+
     # 判断release
     if osc_.isRelease:  # 设置是否release
         logger.include_release_info = True

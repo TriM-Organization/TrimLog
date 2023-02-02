@@ -97,3 +97,6 @@ Part 2 万花 的 logger
  rewrite TrimLog/logger_constants.py (83%)
  copy TrimLog/{logger_constants.py => pip_manager.py} (81%)
 继续优化结构，补充注释，稍改框架，修改版本，上传pip
+
+2023/2/2 "update 2023/2/2 bug fixed" [Eilles Wan & bgArray & FedDragon1] (v0.6.9)
+兼容py3.8，优化注释

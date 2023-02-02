@@ -1,3 +1,34 @@
+# -*- coding: utf-8 -*-
+"""日志消息处理 日志常数模块
+
+本日志功能拷贝并修改自 万花（我的世界指令IDE）
+
+引用协议：
+版权所有© 全体 万花 作者
+
+   Copyright 2022 all the developers of Kaleido
+
+   Licensed under the Apache License, Version 2.0 (the 'License');
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       https://www.apache.org/licenses/LICENSE-2.0
+继承协议：
+版权所有© 全体 万花项目 和 睿穆组织 作者
+
+   Copyright 2022-2023 all the developers of Kaleido and Trim Organization
+
+   Licensed under the Apache License, Version 2.0 (the 'License');
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       https://www.apache.org/licenses/LICENSE-2.0
+"""
+import sys
+from typing import Tuple
+
+from .exceptions import *
+
 # Traceback exception definitions
 WIDTH: int = 100
 EXTRA_LINES: int = 3
@@ -46,8 +77,11 @@ pip check: {8}
 
 # levels_setting
 class _Level:
-    DEBUG: tuple[str, int] = "[bright_cyan][DEBUG][/bright_cyan]", 27
-    INFO: tuple[str, int] = "[green][INFO][/green]", 15
-    WARNING: tuple[str, int] = "[gold3][WARNING][/gold3]", 15
-    ERROR: tuple[str, int] = "[dark_orange3][ERROR][/dark_orange3]", 29
-    CRITICAL: tuple[str, int] = "[red][CRITICAL][/red]", 11
+    if sys.version_info[0] != 3:
+        raise PythonVersionError
+    else:
+        DEBUG: Tuple[str, int] = "[bright_cyan][DEBUG][/bright_cyan]", 27
+        INFO: Tuple[str, int] = "[green][INFO][/green]", 15
+        WARNING: Tuple[str, int] = "[gold3][WARNING][/gold3]", 15
+        ERROR: Tuple[str, int] = "[dark_orange3][ERROR][/dark_orange3]", 29
+        CRITICAL: Tuple[str, int] = "[red][CRITICAL][/red]", 11
