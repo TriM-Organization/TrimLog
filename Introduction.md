@@ -1,5 +1,5 @@
 # TrimLog 使用指南
-（2023/2/2 版本）
+（2023/2/3 版本）
 
 本仓库使用Apache2.0协议开源
 
@@ -383,4 +383,454 @@ mandatory_use：是否无视self.is_logging/self.printing/self.print_level的限
 你需要填入：test：你想要写入的文本；
 mandatory_use：是否无视self.is_logging/self.writing的限制写入。
 
-#### 2.4.10 logger.
+#### 2.4.10 logger.headline_shower()
+```text
+    def headline_shower(self, mandatory_use: bool = False) -> None:
+        """
+        show this library's headline.
+        :param mandatory_use: allow to use this function while "self.is_logging" is False and self.headline_count >= 1.
+        control
+        """
+```
+
+用于输出headline的函数。
+
+你需要填入：mandatory_use：是否无视self.include_headline和self.headline_count输出。
+
+输出条件：
+```text
+if (self.include_headline is True and self.headline_count < 1) or \
+                mandatory_use is True:  # 启动两种条件：允许自动包含打印且次数为0；强制打印
+```
+
+默认输出示例：
+
+```text
+────────────────────────────────── Headline ───────────────────────────────────
+[14:27:31] [WARNING] <logger_main.py-headline_shower: 389>   logger_main.py:266
+           Test Project v0.1.2334                                              
+           Using TrimLog Library by Apache2.0 License.                         
+           Copyright 2022-2023 all the developers of Kaleido                   
+           and Trim Organization.(FedDragon1, Eilles Wan,                      
+           bgArray)                                                            
+           Library Version: v0.6.8                                             
+                                                                               
+───────────────────────── License for Pip manage Lib ──────────────────────────
+           [WARNING] <logger_main.py-headline_shower: 404>   logger_main.py:266
+           Using Pip manage Lib Library by Apache 2.0                          
+           License.                                                            
+           Copyright 2022-2023 all the developers of Trim                      
+           Organization.(FedDragon1, Eilles Wan, bgArray)                      
+           Library Version: v0.2.7                                             
+
+```
+
+默认模板：
+```text
+# {0}{1}:使用程序名称及版本号，由osc管理
+# {2}:logger版本号
+{0} {1}
+Using TrimLog Library by Apache2.0 License.
+Copyright 2022-2023 all the developers of Kaleido and Trim Organization.(FedDragon1, Eilles Wan, bgArray)
+Library Version: {2}
+```
+
+#### 2.4.11 logger.baseinfo_shower()
+```text
+    def baseinfo_shower(self) -> None:
+        """
+        show:running platform, Python version, Python cmd version, Python version info, program location,
+        default encoding, file system encoding, pip list, pip check.
+        """
+```
+
+用于输出程序运行环境信息。
+
+无实参。
+
+输出条件：
+```text
+        # 启用条件：使用log且启用release模式
+        if self.include_release_info and self.is_logging:
+```
+
+默认输出示例：
+
+```text
+────────────────────────────────── BaseInfo ───────────────────────────────────
+           [WARNING] <logger_main.py-baseinfo_shower: 420>   logger_main.py:266
+           running platform: win32                                             
+           Python version: 10.0.19045                                          
+           Python cmd version: 3.9.13 (main, Aug 25 2022,                      
+           23:51:50) [MSC v.1916 64 bit (AMD64)]                               
+           Python version info: sys.version_info(major=3,                      
+           minor=9, micro=13, releaselevel='final',                            
+           serial=0)                                                           
+           program location:                                                   
+           L:\logger更新\TrimLog\v0.6.5\TrimLog\TrimLog                        
+           default encoding: utf-8                                             
+           file system encoding: utf-8                                         
+           pip list: Amount is bigger than default, so                         
+           there's no output.                                                  
+           pip check: Don't use pip check.                                     
+```
+
+默认模板：
+
+```text
+RELEASE_STRUCTURE = """
+running platform: {0}
+Python version: {1}
+Python cmd version: {2}
+Python version info: {3}
+program location: {4}
+default encoding: {5}
+file system encoding: {6}
+pip list: {7}
+pip check: {8}
+```
+
+#### 2.4.12 logger.license_shower()
+```text
+    def license_shower(
+            self,
+            lib_name: str,
+            license_name: str,
+            license_line: str,
+            lib_version: str,
+            addition: str = "",
+            include_startline: bool = True,
+    ) -> None:
+        """
+        show a specified license
+        :param lib_name: what's your importing lib's name?
+        :param license_name: what's your importing lib's license?
+        :param license_line: copy your importing lib's license show information. Be like:
+        Copyright 2022-2023 all the developers of Trim Organization.(FedDragon1, Eilles Wan, bgArray)
+        :param lib_version: what's your importing lib's version?
+        :param addition: if there's something you want to add, fill in this blank. (if not, please keep "")
+        :param include_startline: to show a line before the main text or not.
+        """
+```
+
+用于打印许可证或者协议信息。
+
+你需要填入：lib_name：引用库的名称；license_name：许可证名称（如Apache2.0）；
+license_line：一行许可证引用复制证明的话（如：Copyright 2022-2023 all the developers of Trim Organization.
+(FedDragon1, Eilles Wan, bgArray)）；
+lib_version：引用库版本；addition：附加内容；include_startline是否开始打印一条分割线。
+
+输出条件：
+```text
+        # 启用条件：使用log且启用license输出
+        if self.include_license and self.is_logging:
+```
+
+默认输出示例：
+
+```text
+────────────────────────────── License for libA ───────────────────────────────
+           [WARNING] <logger_main.py-license_shower: 462>    logger_main.py:266
+           Using libA Library by GPL3.0 License.                               
+           Copyright 2023 xxx                                                  
+           Library Version: v0.0.1                                             
+           This lib is xxx.    
+```
+
+默认模板：
+```text
+# {0} lib_name; {1} license_name; {2} license_line; {3} lib_version; {4} addition(optional)
+LICENSE_STRUCTURE: str = """
+Using {0} Library by {1} License.
+{2}
+Library Version: {3}
+{4}
+"""
+```
+
+#### 2.4.13 logger.default_value_return()
+```text
+    @staticmethod
+    def default_value_return() -> list:
+        """
+        to return our library default values.
+        :return: a list.
+        """
+```
+
+返回默认参数，无实参。
+
+模板：
+```text
+return_list = [
+            {
+                "WIDTH": WIDTH,
+                "EXTRA_LINES": EXTRA_LINES,
+                "THEME": THEME,
+                "WORD_WRAP": WORD_WRAP,
+                "SHOW_LOCALS": SHOW_LOCALS,
+                "INDENT_GUIDES": INDENT_GUIDES,
+                "SUPPRESS": SUPPRESS,
+                "MAX_FRAMES": MAX_FRAMES,
+            },
+            {
+                "HEADLINE_STRUCTURE": HEADLINE_STRUCTURE,
+                "LICENSE_STRUCTURE": LICENSE_STRUCTURE,
+                "RELEASE_STRUCTURE": RELEASE_STRUCTURE,
+            },
+            {"WEIGHT_ORDER": WEIGHT_ORDER},
+            {"NoSettings": NoSettings, "OverSettings": OverSettings},
+            {"PipManage": PipManage, "PipManage.__version__": PipManage.__version__},
+        ]                    
+```
+
+#### 2.4.14-2.4.16 logger.save()/tips()/register_traceback()
+不建议使用，主要为内部方法，暂时不设教程。
+
+## Part3 Pip Manage部分
+```text
+# Pip method
+class PipManage:
+    """
+    管理Pip的类，一个Project一个即可
+    write by bgArray
+    """
+
+    __version__ = "v0.2.7"
+```
+因为这个部分比较简单，我就按照教程写了，不按上面的文档格式。
+
+#### 3.1 pm 初始化
+```text
+    def __init__(
+        self,
+        is_detect_pip: bool = False,
+        is_install_pip: bool = False,
+        max_printing_lib_count: int = 20,
+    ):
+        """
+        实例化对象
+        :param is_detect_pip: logger库 是否启用检测pip安装情况
+        :param is_install_pip: logger库 是否自动安装pip
+        :param max_printing_lib_count: logger库 最大print多少个Lib的阈值
+        """
+```
+
+如上面，正常实例化即可。
+
+#### 3.2 pm.count()
+返回当前环境下有多少个pip包
+
+#### 3.3 pm.return_lib()
+```text
+    def return_lib(self) -> tuple[str, str, list]:
+        """
+        以yield方式返回环境下的 包名和版本 , 所依赖的其他包
+        :return:
+        """
+```
+
+#### 3.4 pm.detecting_setting()
+```text
+    def detecting_setting(
+        self,
+        requirements_list: list[pkg_resources.Requirement.parse] = None,
+        requirements_path: str = None,
+    ) -> None:
+        """
+        设置要检测的对象，注意两个参数填一个且只有一个就好，建议使用path
+        :param requirements_list: 传入[Requirement.parse('matplotlib'), Requirement.parse('mido')]这样的列表
+        :param requirements_path: 传入requirements.txt的路径即可
+        :return: None
+```
+
+在pip安装及检测前必须做的设置，建议用路径requirements.txt输入。
+
+#### 3.5 pm.pip_detect()
+在执行完上面的函数后可执行这个：
+```text
+    def pip_detect(self) -> Union[bool, list[dict[str, str]], list[dict[str, None]]]:
+        """
+        先执行detecting_setting()
+        :return: 不缺库的时候返回True;缺库时返回一个列表，里面会以{"need": xxx, "have": yyy}形式说明，若版本冲突，则yyy为str；
+        若缺少库，则yyy为None
+        """
+```
+
+#### 3.6 pm.pip_install()
+执行完上面两个函数方可执行这个：
+```text
+    def pip_install(self) -> bool:
+        """
+        根据self.detect_report安装库
+        :return: True/False 表示是否全部安装正确
+        """
+```
+
+#### 3.7 PM搭配logger使用示例
+
+```python
+import TrimLog
+from TrimLog import object_constants
+from TrimLog import log__init__, logger
+
+osc = object_constants.ObjectStateConstant()
+
+pm = TrimLog.PipManage(True, True, 40)
+pm.detecting_setting(requirements_path="requirements.txt")
+osc.dp("dp" + str(pm.pip_detect()))
+
+osc.set_console(logger.console)
+osc.dp("dp: 666")
+
+logger.show_position = True
+logger.include_release_info = True  # Release 模式
+# logger.include_headline = False
+log__init__(osc, pm)
+```
+
+## Part4 ObjectStateConstant部分
+这个没啥可说的，就是项目常量记录：
+```python
+import builtins
+import rich.console
+
+
+class ObjectStateConstant(builtins.object):
+    def __init__(self):
+        """
+        __init__() function. change values after you initialize.
+        """
+        self.debugging = True
+        self.project_name = ""
+        self.version = "v0.0.1"
+        self.version_tuple = (0, 0, 1)
+        self.ParameterSelection = "default=self"
+
+        self.isLoggingUsing = True
+
+        self.isRelease = False
+
+        self.console = None
+
+    def set_console(self, in_console: rich.console.Console) -> None:
+        """
+        give a logger console object.
+        :param in_console: logger console object.
+        """
+        self.console: rich.console.Console = in_console
+
+    def get_is_debug(self) -> bool:
+        return self.debugging
+
+    def get_versions(self) -> list:
+        return [self.version, self.version_tuple]
+
+    def debugging_print(self, anything) -> None:
+        if self.debugging:
+            if self.console is not None:
+                self.console.print(anything)
+            else:
+                print(anything)
+
+    def dp(self, anything) -> None:
+        if self.debugging:
+            if self.console is not None:
+                self.console.print(anything)
+            else:
+                print(anything)
+
+```
+唯一值得一提的是，这里面的dp函数可用使用rich模块的print。
+可以使用set_console来启用这个功能。
+
+下面就是示例代码：
+```python
+import TrimLog
+from TrimLog import object_constants
+from TrimLog import log__init__, logger
+
+osc = object_constants.ObjectStateConstant()
+osc.isLoggingUsing = False
+osc.project_name = "Test Project"
+osc.version = "v0.1.2334"
+
+pm = TrimLog.PipManage(True, True, 40)
+# pm.detecting_setting(requirements_path="requirements.txt")
+osc.dp("dp" + str(pm.pip_detect()))
+
+osc.set_console(logger.console)
+osc.dp("dp: 666")
+
+logger.show_position = True
+logger.include_release_info = True  # Release 模式
+# logger.include_headline = False
+log__init__(osc, pm)
+```
+
+## Part5 tips功能补充说明
+
+最后补充一个logger功能，没有放在logger章节里。
+```text
+logger.tips_list = [{"position": "test.py:80 in <module>",
+                     "error_text": "ZeroDivisionError: division by zero",
+                     "tips": "除数为0了，你可以：1.  xxxx; 2.xxxx"}]
+```
+你可以在你的代码中无限扩展这个list，但每个项目中的key都应该保持和这个一样。
+
+position是相对路径，必须保持这个格式。
+
+error_test是报错最后一行内容。
+
+tips就是当你的程序出现这个错误后，你会给你的用户一个什么样的提示。
+
+使用示例：
+```text
+logger.tips_list = [{"position": "test.py:80 in <module>",
+                     "error_text": "ZeroDivisionError: division by zero",
+                     "tips": "除数为0了，你可以：1.  xxxx; 2.xxxx"}]
+
+print(5 / 0)  # 这是test.py的第80行
+```
+输出示例：
+```text
+           [CRITICAL] <logger_main.py-excepthook: 609>       logger_main.py:266
+           出现严重错误，程序崩溃！详情请看                                    
+           'L:\logger更新\TrimLog\v0.6.5\TrimLog\TrimLog\log                   
+           2023-02-03 15_05_47.abc.log'                                        
+┌─────────────────────────────── Traceback (most recent call last) ────────────────────────────────┐
+│ L:\logger更新\TrimLog\v0.6.5\TrimLog\TrimLog\test.py:80 in <module>                              │
+│                                                                                                  │
+│   77 │   │   │   │   │    "error_text": "ZeroDivisionError: division by zero",                   │
+│   78 │   │   │   │   │    "tips": "除数为0了，你可以：1.  xxxx; 2.xxxx"}]                        │
+│   79                                                                                             │
+│ > 80 print(5 / 0)                                                                                │
+│   81                                                                                             │
+│                                                                                                  │
+│ ┌─────────────────────────────────────────── locals ───────────────────────────────────────────┐ │
+│ │      log__init__ = <function log__init__ at 0x000001D53C363430>                              │ │
+│ │           logger = <TrimLog.logger_main.Logger object at 0x000001D53DED5370>                 │ │
+│ │ object_constants = <module 'TrimLog.object_constants' from                                   │ │
+│ │                    'L:\\logger更新\\TrimLog\\v0.6.5\\TrimLog\\TrimLog\\object_constants.py'> │ │
+│ │              osc = <TrimLog.object_constants.ObjectStateConstant object at                   │ │
+│ │                    0x000001D53B78BFD0>                                                       │ │
+│ │               pm = <TrimLog.pip_manager.PipManage object at 0x000001D53B78BFA0>              │ │
+│ │          TrimLog = <module 'TrimLog' from                                                    │ │
+│ │                    'L:\\logger更新\\TrimLog\\v0.6.5\\TrimLog\\TrimLog\\__init__.py'>         │ │
+│ └──────────────────────────────────────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+ZeroDivisionError: division by zero
+除数为0了，你可以：1.  xxxx; 2.xxxx
+           [INFO] <logger_main.py-save: 510>                 logger_main.py:266
+           移除最早的日志：'logs/2023-02-01                                    
+           12_10_28.abc.log'                                                   
+           [INFO] <logger_main.py-save: 537> 日志保存至      logger_main.py:266
+           'L:\logger更新\TrimLog\v0.6.5\TrimLog\TrimLog\log                   
+           \2023-02-03 15_05_47.abc.log'                                       
+```
+
+## Part6 后记
+
+预祝各位TrimLog使用愉快。
+
+不要忘了star！

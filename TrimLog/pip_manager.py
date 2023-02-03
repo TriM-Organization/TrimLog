@@ -51,6 +51,7 @@ class PipManage:
         """
         实例化对象
         :param is_detect_pip: logger库 是否启用检测pip安装情况
+        :param is_install_pip: logger库 是否自动安装pip
         :param max_printing_lib_count: logger库 最大print多少个Lib的阈值
         """
         self.working_set = pkg_resources.WorkingSet()

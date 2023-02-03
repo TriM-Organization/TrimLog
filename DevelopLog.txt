@@ -103,3 +103,6 @@ Part 2 万花 的 logger
 
 2023/2/2 "update 2023/2/2 documents 1" [bgArray]
 文档更新1
+
+2023/2/3 "update 2023/2/3 documents 2" [bgArray]
+文档更新完毕，进入release版本前debug阶段。

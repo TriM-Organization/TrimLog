@@ -38,7 +38,7 @@ pm = TrimLog.PipManage(True, True, 40)
 # pm.detecting_setting(requirements_path="requirements.txt")
 osc.dp("dp" + str(pm.pip_detect()))
 
-osc.get_console(logger.console)
+osc.set_console(logger.console)
 osc.dp("dp: 666")
 
 logger.show_position = True
@@ -73,7 +73,7 @@ logger.critical("c")
 logger.set_print_level = TrimLog.INFO
 logger.info(logger.default_value_return())
 
-logger.tips_list = [{"position": "test.py:58 in <module>",
+logger.tips_list = [{"position": "test.py:80 in <module>",
                      "error_text": "ZeroDivisionError: division by zero",
                      "tips": "除数为0了，你可以：1.  xxxx; 2.xxxx"}]
 

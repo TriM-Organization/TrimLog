@@ -46,7 +46,7 @@ class ObjectStateConstant(builtins.object):
 
         self.console = None
 
-    def get_console(self, in_console: rich.console.Console) -> None:
+    def set_console(self, in_console: rich.console.Console) -> None:
         """
         give a logger console object.
         :param in_console: logger console object.
