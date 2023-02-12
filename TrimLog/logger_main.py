@@ -710,7 +710,7 @@ def log__init__(osc_in: ObjectStateConstant, pip_in: PipManage) -> None:
 # version: get from __init__.py
 __version__: str = ""
 
-T: TypeVar = TypeVar("T")
+T = TypeVar("T")
 L = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]  # 等级选择列表
 
 # instantiation

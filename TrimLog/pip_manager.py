@@ -28,7 +28,7 @@ pip管理类开发者：bgArray
 import pkg_resources
 import os
 
-from typing import Union
+from typing import Union, Tuple, List, Dict
 
 from .exceptions import *
 
@@ -72,7 +72,7 @@ class PipManage:
         """
         return self.lst.__len__()
 
-    def return_lib(self) -> tuple[str, str, list]:
+    def return_lib(self) -> Tuple[str, str, list]:
         """
         以yield方式返回环境下的 包名和版本 , 所依赖的其他包
         :return:
@@ -82,7 +82,7 @@ class PipManage:
                 item.requires()
             )  # 包名和版本 , 所依赖的其他包
 
-    def pip_detect(self) -> Union[bool, list[dict[str, str]], list[dict[str, None]]]:
+    def pip_detect(self) -> Union[bool, List[Dict[str, str]], List[Dict[str, None]]]:
         """
         先执行detecting_setting()
         :return: 不缺库的时候返回True;缺库时返回一个列表，里面会以{"need": xxx, "have": yyy}形式说明，若版本冲突，则yyy为str；
@@ -140,7 +140,7 @@ class PipManage:
 
     def detecting_setting(
         self,
-        requirements_list: list[pkg_resources.Requirement.parse] = None,
+        requirements_list: List[pkg_resources.Requirement.parse] = None,
         requirements_path: str = None,
     ) -> None:
         """
