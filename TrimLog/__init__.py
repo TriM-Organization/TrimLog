@@ -27,10 +27,15 @@
 
 from .logger_main import *
 
-__version__: str = "v0.7.1"
-
+__version__: str = "v0.7.2"
 
 set_version(__version__)
+
+
+def get_version() -> str:
+    """获取版本号"""
+    return __version__
+
 
 __all__ = [
     "logger",
@@ -44,6 +49,6 @@ __all__ = [
     "ObjectStateConstant",
     "PipManage",
     "py_version",
-    "__version__",
+    "get_version",
     "log__init__",
 ]

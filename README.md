@@ -8,7 +8,7 @@ TriMO组织的python项目log和项目管理框架库。
 The Python project log and project management framework library for TriM Organization.
 
 
-### 目前版本 Current version: `v0.7.0`
+### 目前版本 Current version: `v0.7.2`
 
 ### 软件架构 Software architecture
 `__init__.py`: 声明程序
@@ -44,14 +44,15 @@ The Python project log and project management framework library for TriM Organiz
 ### 安装教程 Installation tutorial
 
 1. cmd运行pip 安装即可使用(run `pip install -i https://pypi.python.org/simple TrimLog` in cmd)
-   commands:(第一个安装；第二个更新；first used to install; second used to upgrade)
+   commands: (第一个安装；第二个更新；first used to install; second used to upgrade)
    >`pip install -i https://pypi.python.org/simple TrimLog`
    >
    > `pip install -i https://pypi.python.org/simple TrimLog --upgrade`
 
 ### 使用说明 Instruction for use
 
-Will come soon.
+1. GitHub: [链接](https://github.com/TriM-Organization/TrimLog/blob/master/Introduction.md)
+2. Gitee（推荐）: [链接](https://gitee.com/TriM-Organization/TrimLog/blob/master/Introduction.md)
 
 ### 作者 Author
 

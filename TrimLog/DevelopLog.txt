@@ -109,3 +109,7 @@ Part 2 万花 的 logger
 
 2023/2/4 "update 2023/2/4 documents 3" [bgArray] (v0.7.0)
 实战教学更新，进入release版本前debug阶段。
+
+2023/2/12 "update 2023/2/12 bug fixed" [Eilles Wan & bgArray] (v0.7.1 & v0.7.2)
+- 兼容性修复更新，提升版本
+- 修复前置条件不满足时的bug，提升版本，上传pip

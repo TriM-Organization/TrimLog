@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="TrimLog",
-    version="0.7.0",
+    version="0.7.2",
     author="FedDragon1, Eilles Wan, bgArray",
     author_email="TriM-Organization@hotmail.com",
     description="TriMO组织的python项目log和项目管理框架库。\n"
@@ -28,5 +28,9 @@ setuptools.setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+    ],
+    # 需要安装的依赖
+    install_requires=[
+        "rich>=10.9.0",
     ],
 )
