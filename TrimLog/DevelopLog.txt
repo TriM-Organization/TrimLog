@@ -113,3 +113,6 @@ Part 2 万花 的 logger
 2023/2/12 "update 2023/2/12 bug fixed" [Eilles Wan & bgArray] (v0.7.1 & v0.7.2)
 - 兼容性修复更新，提升版本
 - 修复前置条件不满足时的bug，提升版本，上传pip
+
+2023/4/8 "update 2023/4/8 little features update" [bgArray] (v0.7.3)
+- 新增重启功能

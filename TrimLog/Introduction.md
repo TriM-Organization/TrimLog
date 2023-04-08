@@ -1,5 +1,5 @@
 # TrimLog 使用指南
-（2023/2/3 版本）
+（2023/4/8 版本）
 
 本仓库使用Apache2.0协议开源
 
@@ -42,15 +42,16 @@ logger使用起来非常简单，第一步，导入。
 如果你希望设置自动logger的部分参数，而且管理项目更方便，我更推荐使用`logger__init__()`方法后再使用。
 
 ```text
-def log__init__(osc_in: ObjectStateConstant, pip_in: PipManage) -> None:
+def log__init__(osc_in: ObjectStateConstant, pip_in: PipManage, is_regenerate: bool = False) -> None:
     """
     to initialize logger.
-    :param osc_in: need a OSC class.
+    :param osc_in: need an OSC class.
     :param pip_in: need a PM class.
+    :param is_regenerate: if regenerate the log class, set True.
     """
 ```
 
-`logger__init__()`方法默认需要两个实参：一个OSC实例化对象，一个PM实例化对象。
+`logger__init__()`方法默认需要三个实参：一个OSC实例化对象，一个PM实例化对象，最后一个是是否重新生成logger实例的布尔值。
 
 所以，在使用`logger__init__()`之前，您应该需要先实例化这两个对象，具体实例化请看后文。
 
@@ -59,6 +60,7 @@ def log__init__(osc_in: ObjectStateConstant, pip_in: PipManage) -> None:
 2. 利用OSC的内置参数配置全局是否启动release发布模式
 3. 利用PM直接对pip管理
 4. 自动headline
+5. 重新启动logger示例（单例刷新）
 
 当然，以上操作都可以手动完成，但更推荐这样做（尤其你的程序需要发布时）。
 
@@ -201,7 +203,7 @@ if (Logger.instance.is_logging and osc_.isRelease) or Logger.instance.is_tips:
 
 控制是否输出到屏幕上，默认True。
 
-提示：这里为False也可以输出到屏幕上，详见方法——强制启用。
+提示：这里为False也可以输出到屏幕上，详见方法说明——强制启用。
 
 #### 2.3.5 logger.writing
 `writing: bool = True`
@@ -786,47 +788,45 @@ tips就是当你的程序出现这个错误后，你会给你的用户一个什�
 
 使用示例：
 ```text
-logger.tips_list = [{"position": "test.py:80 in <module>",
+logger.tips_list = [{"position": "test.py:91 in <module>",
                      "error_text": "ZeroDivisionError: division by zero",
                      "tips": "除数为0了，你可以：1.  xxxx; 2.xxxx"}]
 
-print(5 / 0)  # 这是test.py的第80行
+print(5 / 0)  # 这是test.py的第91行
 ```
 输出示例：
 ```text
-           [CRITICAL] <logger_main.py-excepthook: 609>       logger_main.py:266
-           出现严重错误，程序崩溃！详情请看                                    
+           [CRITICAL]  出现严重错误，程序崩溃！详情请看      logger_main.py:268
            'L:\logger更新\TrimLog\v0.6.5\TrimLog\TrimLog\log                   
-           2023-02-03 15_05_47.abc.log'                                        
+           2023-04-08 22_45_39.abc.log'                                        
 ┌─────────────────────────────── Traceback (most recent call last) ────────────────────────────────┐
-│ L:\logger更新\TrimLog\v0.6.5\TrimLog\TrimLog\test.py:80 in <module>                              │
+│ L:\logger更新\TrimLog\v0.6.5\TrimLog\TrimLog\test.py:91 in <module>                              │
 │                                                                                                  │
-│   77 │   │   │   │   │    "error_text": "ZeroDivisionError: division by zero",                   │
-│   78 │   │   │   │   │    "tips": "除数为0了，你可以：1.  xxxx; 2.xxxx"}]                        │
-│   79                                                                                             │
-│ > 80 print(5 / 0)                                                                                │
-│   81                                                                                             │
+│   88 │   │   │   │   │    "error_text": "ZeroDivisionError: division by zero",                   │
+│   89 │   │   │   │   │    "tips": "除数为0了，你可以：1.  xxxx; 2.xxxx"}]                        │
+│   90                                                                                             │
+│ > 91 print(5 / 0)  # 91行抛错                                                                    │
+│   92                                                                                             │
 │                                                                                                  │
 │ ┌─────────────────────────────────────────── locals ───────────────────────────────────────────┐ │
-│ │      log__init__ = <function log__init__ at 0x000001D53C363430>                              │ │
-│ │           logger = <TrimLog.logger_main.Logger object at 0x000001D53DED5370>                 │ │
+│ │      log__init__ = <function log__init__ at 0x000001F7C2235430>                              │ │
+│ │           logger = <TrimLog.logger_main.Logger object at 0x000001F7C3DC0100>                 │ │
 │ │ object_constants = <module 'TrimLog.object_constants' from                                   │ │
 │ │                    'L:\\logger更新\\TrimLog\\v0.6.5\\TrimLog\\TrimLog\\object_constants.py'> │ │
 │ │              osc = <TrimLog.object_constants.ObjectStateConstant object at                   │ │
-│ │                    0x000001D53B78BFD0>                                                       │ │
-│ │               pm = <TrimLog.pip_manager.PipManage object at 0x000001D53B78BFA0>              │ │
+│ │                    0x000001F7C1691FA0>                                                       │ │
+│ │               pm = <TrimLog.pip_manager.PipManage object at 0x000001F7C1691F70>              │ │
 │ │          TrimLog = <module 'TrimLog' from                                                    │ │
 │ │                    'L:\\logger更新\\TrimLog\\v0.6.5\\TrimLog\\TrimLog\\__init__.py'>         │ │
 │ └──────────────────────────────────────────────────────────────────────────────────────────────┘ │
 └──────────────────────────────────────────────────────────────────────────────────────────────────┘
 ZeroDivisionError: division by zero
 除数为0了，你可以：1.  xxxx; 2.xxxx
-           [INFO] <logger_main.py-save: 510>                 logger_main.py:266
-           移除最早的日志：'logs/2023-02-01                                    
-           12_10_28.abc.log'                                                   
-           [INFO] <logger_main.py-save: 537> 日志保存至      logger_main.py:266
+           [INFO]      移除最早的日志：'logs/2023-02-01      logger_main.py:268
+           12_54_15.abc.log'                                                   
+           [INFO]      日志保存至                            logger_main.py:268
            'L:\logger更新\TrimLog\v0.6.5\TrimLog\TrimLog\log                   
-           \2023-02-03 15_05_47.abc.log'                                       
+           \2023-04-08 22_45_39.abc.log'     
 ```
 
 ## Part6 后记

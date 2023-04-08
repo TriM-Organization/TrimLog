@@ -52,7 +52,7 @@ logger.include_release_info = True  # Release 模式
 # logger.include_headline = False
 
 # 实战第五步：logger__init__()
-log__init__(osc, pm)
+log__init__(osc, pm)  # 实例化logger，如果后面有True的话就重启logger，这时，上面的参数设置就会失效
 
 logger.suffix = ".abc"  # 设置文件后缀
 

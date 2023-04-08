@@ -657,14 +657,20 @@ pip_list: str = ""
 pip_check: str
 
 
-def log__init__(osc_in: ObjectStateConstant, pip_in: PipManage) -> None:
+def log__init__(osc_in: ObjectStateConstant, pip_in: PipManage, is_regenerate: bool = False) -> None:
     """
     to initialize logger.
-    :param osc_in: need a OSC class.
+    :param osc_in: need an OSC class.
     :param pip_in: need a PM class.
+    :param is_regenerate: if regenerate the log class, set True.
     """
     # 直接用本地变量
     global osc_, logger, pip_list, pip_check
+
+    # 判断是否需要重新生成logger
+    if is_regenerate:
+        logger = Logger()
+        logger.register_traceback()
 
     # osc部分
     osc_ = osc_in
