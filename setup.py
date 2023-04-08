@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 import setuptools
+import TrimLog
+
+print("TrimLog version: " + TrimLog.__version__)
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="TrimLog",
-    version="0.7.2",
+    version=TrimLog.__version__,
     author="FedDragon1, Eilles Wan, bgArray",
     author_email="TriM-Organization@hotmail.com",
     description="TriMO组织的python项目log和项目管理框架库。\n"
