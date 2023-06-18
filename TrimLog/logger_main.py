@@ -29,7 +29,6 @@ from __future__ import annotations
 
 import atexit
 import platform
-import sys
 import time
 
 from types import TracebackType
@@ -581,14 +580,14 @@ class Logger:
             end_t = "└" + "─" * 98 + "┘"
 
             clean_t = (
-                log_t[log_t.find(del_t) + 100 :].replace("│ │", "").replace("│", "")
+                log_t[log_t.find(del_t) + 100:].replace("│ │", "").replace("│", "")
             )
 
-            end_error_text = log_t[log_t.find(end_t) + 100 :].replace("\n", "")
+            end_error_text = log_t[log_t.find(end_t) + 100:].replace("\n", "")
             error_position = (
                 clean_t[: clean_t.find("\n", 2)].replace("\n", "")[1:].replace("  ", "")
             )
-            error_position = error_position[error_position.rfind("\\") + 1 :]
+            error_position = error_position[error_position.rfind("\\") + 1:]
 
             if tips_d is not []:
                 for i in tips_d:
@@ -608,7 +607,8 @@ class Logger:
         """
         register traceback function.
         :param console_width: int, the width of traceback console as well the traceback log file's context
-        :param info_show_fun: function, there should be a function, which must contains a argument to convery a traceback infomation
+        :param info_show_fun: function, there should be a function, which must contains an argument to convery
+        a traceback information
         """
         if Logger.instance.is_logging:
             traceback_console = Console(file=sys.stderr, width=console_width)
