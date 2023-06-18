@@ -89,7 +89,8 @@ class Logger:
             license_level: L = "WARNING",
             max_log_count: int = 20,
             show_position: bool = False,
-            in_suffix: str = ".dsl",
+            suffix: str = ".dsl",
+            is_exception_traceback: bool = True,
 
     ) -> Logger:
         """
@@ -109,7 +110,8 @@ class Logger:
         :param is_auto_headline: allow to print headline when the logger is initializing or not.
         The best choice is false.
         :param is_tips: allow to show some tips when the program have errors or not.
-        :param in_suffix: allow to set a suffix of file name. Be like: ".dsl" or "".
+        :param suffix: allow to set a suffix of file name. Be like: ".dsl" or "".
+        :param is_exception_traceback: allow to show the traceback when the program have errors or not.
         """
         if cls.instance is not None:
             return cls.instance
@@ -133,7 +135,8 @@ class Logger:
             license_level: L = "WARNING",
             max_log_count: int = 20,
             show_position: bool = False,
-            in_suffix: str = ".dsl",
+            suffix: str = ".dsl",
+            is_exception_traceback: bool = True,
 
     ) -> None:
         """
@@ -153,7 +156,8 @@ class Logger:
         :param license_level: choose which level to output the license.
         :param max_log_count: a number that's used to set the maximum number of log files.
         :param show_position: allow to show the running codes position or not.
-        :param in_suffix: allow to set a suffix of file name. Be like: ".dsl" or "".
+        :param suffix: allow to set a suffix of file name. Be like: ".dsl" or "".
+        :param is_exception_traceback: allow to show the traceback when the program have errors or not.
         """
         # 写入文件的内容
         self.log_text: str = ""
@@ -166,7 +170,7 @@ class Logger:
         self.tips_list = []
 
         # 后缀设置
-        self.suffix = in_suffix
+        self.suffix = suffix
 
         # 是否需要输出一些开发时不需要输出的内容；但是用户使用时需要输出的内容
         # 也就是Release版本到不同平台不同版本Python下需要增加的一些信息
@@ -193,7 +197,10 @@ class Logger:
         self.max_log_count: int = max_log_count
 
         # headline理论上只展示一次
-        self.headline_count = 0
+        self.headline_count: int = 0
+
+        # 是否显示抛错板
+        self.is_exception_traceback: bool = is_exception_traceback
 
         # 初始化展示headline
         if is_auto_headline:
@@ -582,6 +589,7 @@ class Logger:
         """
         register traceback function.
         """
+
         if Logger.instance.is_logging:
             traceback_console = Console(file=sys.stderr, width=100)
 
@@ -640,7 +648,8 @@ class Logger:
                     elif isinstance(exc, rich.traceback.Text):
                         logger.write(str(exc.copy()) + "\n")
 
-            sys.excepthook = excepthook
+            if Logger.instance.is_exception_traceback is True:
+                sys.excepthook = excepthook
 
 
 # 获取基础信息

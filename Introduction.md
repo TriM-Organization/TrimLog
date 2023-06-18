@@ -1,5 +1,5 @@
 # TrimLog 使用指南
-（2023/4/8 版本）
+（2023/4/21 版本）
 
 本仓库使用Apache2.0协议开源
 
@@ -60,7 +60,7 @@ def log__init__(osc_in: ObjectStateConstant, pip_in: PipManage, is_regenerate: b
 2. 利用OSC的内置参数配置全局是否启动release发布模式
 3. 利用PM直接对pip管理
 4. 自动headline
-5. 重新启动logger示例（单例刷新）
+5. 重新启动logger实例（单例刷新）
 
 当然，以上操作都可以手动完成，但更推荐这样做（尤其你的程序需要发布时）。
 
@@ -164,7 +164,7 @@ False
         :param is_auto_headline: allow to print headline when the logger is initializing or not.
         The best choice is false.
         :param is_tips: allow to show some tips when the program have errors or not.
-        :param in_suffix: allow to set a suffix of file name. Be like: ".dsl" or "".
+        :param suffix: allow to set a suffix of file name. Be like: ".dsl" or "".
         """
 ```
 
@@ -283,7 +283,7 @@ headline输出和写入等级，默认WARNING。
 #### 2.3.13 logger.max_log_count
 `max_log_count: int = 20`
 
-最多存储多少个文件就开始从最早的文件删去，默认20.
+最多存储多少个文件就开始从最早的文件删去，默认20。
 
 #### 2.3.14 logger.show_position
 `show_position: bool = False`
@@ -295,10 +295,17 @@ headline输出和写入等级，默认WARNING。
 [INFO] <test.py-<module>: 62> a                   logger_main.py:265
 ```
 
-#### 2.3.15 logger.in_suffix
-`in_suffix: str = ".dsl"`
+#### 2.3.15 logger.suffix
+`suffix: str = ".dsl"`
 
 保存的日志后缀，默认为.dsl.log文件。
+
+#### 2.3.16 logger.is_exception_traceback
+```text
+# 是否显示抛错板
+        self.is_exception_traceback: bool = True
+```
+是否显示抛错板，默认True。
 
 
 ### 2.4 logger方法
@@ -828,6 +835,11 @@ ZeroDivisionError: division by zero
            'L:\logger更新\TrimLog\v0.6.5\TrimLog\TrimLog\log                   
            \2023-04-08 22_45_39.abc.log'     
 ```
+此外，tip不会受traceback_exception的影响，即使你设置了traceback_exception为False，tip也会正常显示。
+
+你有可能非常信任你的代码，那么如果用户及时遇到错误，你相信只需要让他看到tip就已经可以解决问题，你也可以关掉traceback_exception，只留下tip。
+
+（或者开发的时候这个太长了）
 
 ## Part6 后记
 
