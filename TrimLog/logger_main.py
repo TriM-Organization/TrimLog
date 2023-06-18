@@ -603,13 +603,16 @@ class Logger:
                         pass
 
     @staticmethod
-    def register_traceback(console_width: int = 64, info_show_fun=None) -> None:
+    def register_traceback(console_width: int = 64, info_show_fun=lambda x:None) -> None:
         """
         register traceback function.
         :param console_width: int, the width of traceback console as well the traceback log file's context
         :param info_show_fun: function, there should be a function, which must contains an argument to convery
         a traceback information
         """
+        if not isinstance(info_show_fun, type(lambda x:None)):
+            logger.write('参数 info_show_fun 应该是一个函数。你传入的是 {}: {}'.format(info_show_fun,type(info_show_fun)))
+            info_show_fun = lambda x: None
         if Logger.instance.is_logging:
             traceback_console = Console(file=sys.stderr, width=console_width)
 
