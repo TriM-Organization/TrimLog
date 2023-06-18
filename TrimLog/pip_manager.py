@@ -25,10 +25,11 @@
 pip管理类开发者：bgArray
 """
 
-import pkg_resources
 import os
+import sys
+from typing import Dict, List, Tuple, Union
 
-from typing import Union, Tuple, List, Dict
+import pkg_resources
 
 from .exceptions import *
 
@@ -207,10 +208,14 @@ class PipManage:
         if self.is_install_pip:
             if self.detect_report.__len__() == 0:
                 return True
-            for i in self.detect_report:
-                if i["have"] is None:
-                    command = "pip install " + str(i["need"])
-                    os.system(command)
+            libs_in_need = [
+                i["need"] if i["have"] is None else "" for i in self.detect_report
+            ]
+            if libs_in_need:
+                command = (
+                    "pip install " if sys.platform == "win32" else "pip3 install "
+                ) + " ".join(libs_in_need)
+                os.system(command)
             if self.pip_detect():
                 return True
             else:

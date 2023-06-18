@@ -116,3 +116,10 @@ Part 2 万花 的 logger
 
 2023/4/8 "update 2023/4/8 little features update" [bgArray] (v0.7.3)
 - 新增重启功能
+
+2023/6/18 "update 2023/4/8 more features update" [Eilles Wan] (v0.8.0)
+- 新增崩溃时可以选择是否调用一个函数（用以输出）
+- 删除多余的文件
+- 修复未安装前置包的问题
+- 修复 `pip_manager.py` 下 `PipManage` 类中 `pip_install` 函数无法在一些平台上使用的问题
+- Black 格式化了一下文档

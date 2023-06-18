@@ -74,23 +74,22 @@ class Logger:
     """
 
     def __new__(
-            cls,
-            is_logging: bool = True,
-            is_auto_headline: bool = False,
-            is_tips: bool = True,
-            printing: bool = True,
-            writing: bool = True,
-            include_headline: bool = True,
-            include_license: bool = True,
-            include_release_info: bool = False,
-            print_level: L = "DEBUG",
-            write_level: L = "INFO",
-            headline_level: L = "WARNING",
-            license_level: L = "WARNING",
-            max_log_count: int = 20,
-            show_position: bool = False,
-            in_suffix: str = ".dsl",
-
+        cls,
+        is_logging: bool = True,
+        is_auto_headline: bool = False,
+        is_tips: bool = True,
+        printing: bool = True,
+        writing: bool = True,
+        include_headline: bool = True,
+        include_license: bool = True,
+        include_release_info: bool = False,
+        print_level: L = "DEBUG",
+        write_level: L = "INFO",
+        headline_level: L = "WARNING",
+        license_level: L = "WARNING",
+        max_log_count: int = 20,
+        show_position: bool = False,
+        in_suffix: str = ".dsl",
     ) -> Logger:
         """
         __new__() method. Don't change it unless you need.
@@ -118,23 +117,22 @@ class Logger:
         return cls.instance
 
     def __init__(
-            self,
-            is_logging: bool = True,
-            is_auto_headline: bool = False,
-            is_tips: bool = True,
-            printing: bool = True,
-            writing: bool = True,
-            include_headline: bool = True,
-            include_license: bool = True,
-            include_release_info: bool = False,
-            print_level: L = "DEBUG",
-            write_level: L = "INFO",
-            headline_level: L = "WARNING",
-            license_level: L = "WARNING",
-            max_log_count: int = 20,
-            show_position: bool = False,
-            in_suffix: str = ".dsl",
-
+        self,
+        is_logging: bool = True,
+        is_auto_headline: bool = False,
+        is_tips: bool = True,
+        printing: bool = True,
+        writing: bool = True,
+        include_headline: bool = True,
+        include_license: bool = True,
+        include_release_info: bool = False,
+        print_level: L = "DEBUG",
+        write_level: L = "INFO",
+        headline_level: L = "WARNING",
+        license_level: L = "WARNING",
+        max_log_count: int = 20,
+        show_position: bool = False,
+        in_suffix: str = ".dsl",
     ) -> None:
         """
         __init__() method. Don't change it unless you need.
@@ -200,13 +198,13 @@ class Logger:
             self.headline_shower()
 
     def log(
-            self,
-            info: T,
-            level: L,
-            mandatory_use: bool = False,
-            frame_file: str = None,
-            frame_name: str = None,
-            frame_lineno: int = None,
+        self,
+        info: T,
+        level: L,
+        mandatory_use: bool = False,
+        frame_file: str = None,
+        frame_name: str = None,
+        frame_lineno: int = None,
     ) -> T:
         """
         log output base function.
@@ -253,13 +251,12 @@ class Logger:
                         f"{time.strftime('[%H:%M:%S]')} [{level}] [{e_w}] {info}\n"
                     )
                 else:
-                    self.log_text += (
-                        f"{time.strftime('[%H:%M:%S]')} [{level}] {info}\n"
-                    )
+                    self.log_text += f"{time.strftime('[%H:%M:%S]')} [{level}] {info}\n"
 
             # 打印模块(条件：启用打印；满足打印权重)
-            if (self.printing and level_weight >= self.print_default_weight) or \
-                    mandatory_use:
+            if (
+                self.printing and level_weight >= self.print_default_weight
+            ) or mandatory_use:
                 if self.show_position:
                     e_w = " <" + end_with.replace("\n", "") + "> "
                     add = style + e_w
@@ -322,7 +319,11 @@ class Logger:
         back_line_number: int = back_frame.f_lineno
         return back_file_name, back_func_name, back_line_number
 
-    def debug(self, debug: T, mandatory_use: bool = False, ) -> T:
+    def debug(
+        self,
+        debug: T,
+        mandatory_use: bool = False,
+    ) -> T:
         """
         output log that's "debug" level.
         :param debug: things you want to output.
@@ -331,7 +332,11 @@ class Logger:
         """
         return self.log(debug, "DEBUG", mandatory_use, *self.get_detail_info())
 
-    def info(self, info: T, mandatory_use: bool = False, ) -> T:
+    def info(
+        self,
+        info: T,
+        mandatory_use: bool = False,
+    ) -> T:
         """
         output log that's "info" level.
         :param info: things you want to output.
@@ -340,7 +345,11 @@ class Logger:
         """
         return self.log(info, "INFO", mandatory_use, *self.get_detail_info())
 
-    def warning(self, warning: T, mandatory_use: bool = False, ) -> T:
+    def warning(
+        self,
+        warning: T,
+        mandatory_use: bool = False,
+    ) -> T:
         """
         output log that's "warning" level.
         :param warning: things you want to output.
@@ -349,7 +358,11 @@ class Logger:
         """
         return self.log(warning, "WARNING", mandatory_use, *self.get_detail_info())
 
-    def error(self, error: T, mandatory_use: bool = False, ) -> T:
+    def error(
+        self,
+        error: T,
+        mandatory_use: bool = False,
+    ) -> T:
         """
         output log that's "error" level.
         :param error: things you want to output.
@@ -358,7 +371,11 @@ class Logger:
         """
         return self.log(error, "ERROR", mandatory_use, *self.get_detail_info())
 
-    def critical(self, critical: T, mandatory_use: bool = False, ) -> T:
+    def critical(
+        self,
+        critical: T,
+        mandatory_use: bool = False,
+    ) -> T:
         """
         output log that's "critical" level.
         :param critical: things you want to output.
@@ -367,7 +384,11 @@ class Logger:
         """
         return self.log(critical, "CRITICAL", mandatory_use, *self.get_detail_info())
 
-    def write(self, text: str, mandatory_use: bool = False, ) -> None:
+    def write(
+        self,
+        text: str,
+        mandatory_use: bool = False,
+    ) -> None:
         """
         write things into self.log_text.
         :param text: things
@@ -383,8 +404,9 @@ class Logger:
         control
         """
         global __version__, pip_manage_, osc_
-        if (self.include_headline is True and self.headline_count < 1) or \
-                mandatory_use is True:  # 启动两种条件：允许自动包含打印且次数为0；强制打印
+        if (
+            self.include_headline is True and self.headline_count < 1
+        ) or mandatory_use is True:  # 启动两种条件：允许自动包含打印且次数为0；强制打印
             self.console.rule("[bold red]Headline")  # 画线
             self.log(
                 HEADLINE_STRUCTURE.format(osc_.project_name, osc_.version, __version__),
@@ -430,17 +452,17 @@ class Logger:
                     pip_check,
                 ),
                 self.headline_level,  # 跟headline同级输出
-                mandatory_use=True  # 强制
+                mandatory_use=True,  # 强制
             )
 
     def license_shower(
-            self,
-            lib_name: str,
-            license_name: str,
-            license_line: str,
-            lib_version: str,
-            addition: str = "",
-            include_startline: bool = True,
+        self,
+        lib_name: str,
+        license_name: str,
+        license_line: str,
+        lib_version: str,
+        addition: str = "",
+        include_startline: bool = True,
     ) -> None:
         """
         show a specified license
@@ -505,7 +527,9 @@ class Logger:
             else:
                 full_path = ["logs/{0}".format(x) for x in list_of_files]  # 存在就移除最早日志
 
-                if len(list_of_files) >= Logger.instance.max_log_count:  # 用 instance 访问self里的对象
+                if (
+                    len(list_of_files) >= Logger.instance.max_log_count
+                ):  # 用 instance 访问self里的对象
                     oldest_file = min(full_path, key=os.path.getctime)
                     logger.log(f"移除最早的日志：{oldest_file!r}", INFO)
                     os.remove(oldest_file)
@@ -526,11 +550,13 @@ class Logger:
                     return
 
                 # 打开文件写入
-                whole_path = "./logs/" + (name := Logger.str_start_time + f"{Logger.instance.suffix}.log")
+                whole_path = "./logs/" + (
+                    name := Logger.str_start_time + f"{Logger.instance.suffix}.log"
+                )
                 with open(
-                        whole_path,
-                        "w",
-                        encoding="UTF-8",
+                    whole_path,
+                    "w",
+                    encoding="UTF-8",
                 ) as f:
                     f.write(Logger.instance.log_text)  # 写入
 
@@ -550,27 +576,27 @@ class Logger:
             log_t = Logger.instance.log_text
             tips_d = Logger.instance.tips_list
             del_t = (
-                    "┌" + "─" * 31 + " Traceback (most recent call last) " + "─" * 32 + "┐"
+                "┌" + "─" * 31 + " Traceback (most recent call last) " + "─" * 32 + "┐"
             )
             end_t = "└" + "─" * 98 + "┘"
 
             clean_t = (
-                log_t[log_t.find(del_t) + 100:].replace("│ │", "").replace("│", "")
+                log_t[log_t.find(del_t) + 100 :].replace("│ │", "").replace("│", "")
             )
 
-            end_error_text = log_t[log_t.find(end_t) + 100:].replace("\n", "")
+            end_error_text = log_t[log_t.find(end_t) + 100 :].replace("\n", "")
             error_position = (
                 clean_t[: clean_t.find("\n", 2)].replace("\n", "")[1:].replace("  ", "")
             )
-            error_position = error_position[error_position.rfind("\\") + 1:]
+            error_position = error_position[error_position.rfind("\\") + 1 :]
 
             if tips_d is not []:
                 for i in tips_d:
                     # noinspection PyBroadException
                     try:
                         if (
-                                error_position == i["position"]
-                                and end_error_text == i["error_text"]
+                            error_position == i["position"]
+                            and end_error_text == i["error_text"]
                         ):
                             print(i["tips"])
                             Logger.instance.log_text += i["tips"] + "\n"
@@ -578,17 +604,19 @@ class Logger:
                         pass
 
     @staticmethod
-    def register_traceback() -> None:
+    def register_traceback(console_width: int = 64, info_show_fun=None) -> None:
         """
         register traceback function.
+        :param console_width: int, the width of traceback console as well the traceback log file's context
+        :param info_show_fun: function, there should be a function, which must contains a argument to convery a traceback infomation
         """
         if Logger.instance.is_logging:
-            traceback_console = Console(file=sys.stderr, width=100)
+            traceback_console = Console(file=sys.stderr, width=console_width)
 
             def excepthook(
-                    type_: Type[BaseException],
-                    value: BaseException,
-                    traceback: Optional[TracebackType],
+                type_: Type[BaseException],
+                value: BaseException,
+                traceback: Optional[TracebackType],
             ) -> None:
 
                 exception = Traceback.from_exception(
@@ -611,6 +639,8 @@ class Logger:
                     CRITICAL,
                 )
 
+                final_context = ""
+
                 exception_no_local = Traceback.from_exception(
                     type_,
                     value,
@@ -627,18 +657,26 @@ class Logger:
 
                 traceback_console.print(exception_no_local)
                 for exc in exception.__rich_console__(
-                        traceback_console, traceback_console.options
+                    traceback_console, traceback_console.options
                 ):
                     if isinstance(exc, rich.traceback.Constrain):
                         panel = exc.renderable
 
                         for thing in panel.__rich_console__(
-                                traceback_console, traceback_console.options
+                            traceback_console, traceback_console.options
                         ):
-                            logger.write(thing.text)
+                            final_context += thing.text
 
                     elif isinstance(exc, rich.traceback.Text):
-                        logger.write(str(exc.copy()) + "\n")
+                        final_context += str(exc.copy()) + "\n"
+
+                logger.write(final_context)
+
+                # 你传入的函数应该包含且仅包含一个必填参数，不然你传啥？
+                try:
+                    info_show_fun(final_context)
+                except TypeError:
+                    pass
 
             sys.excepthook = excepthook
 
@@ -649,15 +687,15 @@ py_sys_version: str = sys.version
 py_sys_version_info: str = sys.version_info
 py_platform: str = sys.platform
 default_encoding: str = sys.getdefaultencoding()  # 获取系统当前编码
-file_system_encoding: str = (
-    sys.getfilesystemencoding()
-)  # 获取文件系统使用编码方式
+file_system_encoding: str = sys.getfilesystemencoding()  # 获取文件系统使用编码方式
 running_path: str = os.path.abspath("./")  # logger程序目录环境
 pip_list: str = ""
 pip_check: str
 
 
-def log__init__(osc_in: ObjectStateConstant, pip_in: PipManage, is_regenerate: bool = False) -> None:
+def log__init__(
+    osc_in: ObjectStateConstant, pip_in: PipManage, is_regenerate: bool = False
+) -> None:
     """
     to initialize logger.
     :param osc_in: need an OSC class.

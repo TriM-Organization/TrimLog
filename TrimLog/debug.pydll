@@ -1,9 +1,0 @@
-# if "pypd" in str(item) and "PyPD" in str(i):
-                #     print(str(i))
-                #     print(str(item.project_name) + "==" + str(item.version))
-                #
-                #     print(str(i) == str(item.project_name) + "==" + str(item.version))
-                #     print(str(item.project_name) in str(i))
-                #     print(str(i) in (str(item.project_name) + "==" + str(item.version)))
-                #     print(str(i).lower() in (str(item.project_name).lower() + "==" + str(item.version)))
-                #     print(str(i).upper() in (str(item.project_name).upper() + "==" + str(item.version)))
