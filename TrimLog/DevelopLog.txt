@@ -123,3 +123,6 @@ Part 2 万花 的 logger
 - 修复未安装前置包的问题
 - 修复 `pip_manager.py` 下 `PipManage` 类中 `pip_install` 函数无法在一些平台上使用的问题
 - Black 格式化了一下文档
+
+2023'6/16 update for critical bug while crash(3 in total) [Eilles Wan] (v0.8.0.1)
+- 修复崩溃时会崩溃的bug
