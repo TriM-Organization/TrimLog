@@ -8,7 +8,7 @@ TriMO组织的python项目log和项目管理框架库。
 The Python project log and project management framework library for TriM Organization.
 
 
-### 目前版本 Current version: `v0.8.0`
+### 目前版本 Current version: `v0.8.0.1`
 
 ### 软件架构 Software architecture
 `__init__.py`: 声明程序
