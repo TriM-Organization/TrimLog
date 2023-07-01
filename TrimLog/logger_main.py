@@ -32,7 +32,7 @@ import platform
 import time
 
 from types import TracebackType
-from typing import Literal, Optional, Type, TypeVar
+from typing import Literal, Optional, Type, TypeVar, Union
 
 import rich.traceback
 from rich.console import Console
@@ -59,7 +59,7 @@ class Logger:
     main logger class.
     """
 
-    instance: Logger = None
+    instance: Optional[Logger] = None
     """
     Logger.instance: used to get value for static method
     """
@@ -201,9 +201,9 @@ class Logger:
         info: T,
         level: L,
         mandatory_use: bool = False,
-        frame_file: str = None,
-        frame_name: str = None,
-        frame_lineno: int = None,
+        frame_file: Optional[str] = None,
+        frame_name: Optional[str] = None,
+        frame_lineno: Optional[int] = None,
     ) -> T:
         """
         log output base function.
@@ -232,7 +232,7 @@ class Logger:
 
             # 获取log前面输出的执行代码位置信息
             if self.show_position:
-                if frame_lineno is None and frame_name is None and frame_file is None:
+                if not (frame_lineno and frame_name and frame_file):
                     back_frame = sys._getframe().f_back
                     frame_file: str = os.path.basename(back_frame.f_code.co_filename)
                     frame_name: str = back_frame.f_code.co_name
@@ -740,7 +740,7 @@ def log__init__(
         if pip_manage.pip_detect() is True:
             pip_check = "All lib is already done."
         else:
-            pip_check = pip_manage.pip_detect()
+            pip_check = str(pip_manage.pip_detect())
     else:
         pip_check = "Don't use pip check."
 

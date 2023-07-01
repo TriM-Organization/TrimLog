@@ -27,7 +27,7 @@ pip管理类开发者：bgArray
 
 import os
 import sys
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Tuple, Union, Literal,Generator
 
 import pkg_resources
 
@@ -141,8 +141,8 @@ class PipManage:
 
     def detecting_setting(
         self,
-        requirements_list: List[pkg_resources.Requirement.parse] = None,
-        requirements_path: str = None,
+        requirements_list: Union[List[pkg_resources.Requirement], None] = None,
+        requirements_path: Union[str, None] = None,
     ) -> None:
         """
         设置要检测的对象，注意两个参数填一个且只有一个就好，建议使用path
@@ -189,16 +189,20 @@ class PipManage:
         :param path: requirements.txt path
         :return: str: thing
         """
+
+        # 这里建议用 chardet 判断编码，不然容易空
+        # https://github.com/chardet/chardet
+        req_str = ""
         try:
-            f = open(path, mode="r", encoding="utf-16")
-            return f.read(-1)
+            req_str = open(path, mode="r", encoding="utf-16").read(-1)
         except UnicodeError as e:
-            f.close()
-            if str(e) == "UTF-16 stream does not start with BOM":
-                f = open(path, mode="r", encoding="utf-8")
-                return f.read(-1)
-        finally:
-            f.close()
+
+            if e.args[-1] == "UTF-16 stream does not start with BOM":
+                req_str = open(path, mode="r", encoding="utf-8-sig").read(-1)
+            elif e.args[-1] == "truncated data":
+                req_str = open(path, mode="r", encoding="utf-8").read(-1)
+        
+        return req_str
 
     def pip_install(self) -> bool:
         """
@@ -220,3 +224,5 @@ class PipManage:
                 return True
             else:
                 return False
+        else:
+            return True
