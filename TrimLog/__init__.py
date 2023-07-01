@@ -27,7 +27,7 @@
 
 from .logger_main import *
 
-__version__: str = "v0.8.0.1"
+__version__: str = "v0.8.1"
 
 set_version(__version__)
 

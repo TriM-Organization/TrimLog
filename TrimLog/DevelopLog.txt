@@ -127,3 +127,6 @@ Part 2 万花 的 logger
 2023/6/16 update for critical bug while crash(3 in total) [Eilles Wan] (v0.8.0.1)
 - 修复崩溃时会崩溃的bug
 
+2023/7/1 "update 2023/7/1 Slight micro runtime bug fixed" [Eilles Wan] (v0.8.1)
+- 并未完全修复 pip_manager 中可能无法正确读取 requirement.txt 的bug，但是有修复一点
+- 检查部分变量类型，太多了查不过来，规范了部分变量类型定义格式
