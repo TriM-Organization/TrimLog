@@ -130,3 +130,9 @@ Part 2 万花 的 logger
 2023/7/1 "update 2023/7/1 Slight micro runtime bug fixed" [Eilles Wan] (v0.8.1)
 - 并未完全修复 pip_manager 中可能无法正确读取 requirement.txt 的bug，但是有修复一点
 - 检查部分变量类型，太多了查不过来，规范了部分变量类型定义格式
+
+2023/11/9 "update 2023/11/9 ExitExecutionUpdate & format code" [Eilles Wan] (v0.8.2)
+- 完善了调用程序 traceback 时调用函数之功能
+- 完善了 ObjectStateConstant 之功能
+- 把文档放在仓库中，和乐而不为呢
+- 格式化代码，修改版本号

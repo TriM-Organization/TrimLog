@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 # Exceptions
 class NoSettings(BaseException):  # PIP管理设置参数为空
     pass

@@ -14,7 +14,7 @@
 
        https://www.apache.org/licenses/LICENSE-2.0
 继承协议：
-版权所有© 全体 万花项目 和 睿穆组织 作者
+版权所有© 全体 万花项目 和 睿乐组织 作者
 
    Copyright 2022-2023 all the developers of Kaleido and Trim Organization
 
@@ -32,7 +32,7 @@ from TrimLog import log__init__, logger
 
 # 实战第二步：OSC实例化
 osc = object_constants.ObjectStateConstant()
-osc.isLoggingUsing = False  # 设置osc的logging控制（相当于整个项目初始状态）
+osc.is_logging_using = False  # 设置osc的logging控制（相当于整个项目初始状态）
 osc.project_name = "Test Project"  # 你这个项目叫什么
 osc.version = "v0.1.2334"  # 你这个项目的版本
 
@@ -60,7 +60,7 @@ logger.baseinfo_shower()  # 如果上面Release为True，这里就会输出运�
 
 logger.info("nothing")  # 这一条信息不会输出，因为OSC设置了Logging为False，并且被传入参数了
 
-osc.isLoggingUsing = True  # 重新设置OSC
+osc.is_logging_using = True  # 重新设置OSC
 
 pm.is_install_pip = False  # 重新设置PM
 pm.is_detect_pip = False
@@ -84,8 +84,12 @@ logger.info(logger.default_value_return())  # 正常输出
 
 # 实战第六步：设置tips_list
 
-logger.tips_list = [{"position": "test.py:91 in <module>",  # 传入参数
-                     "error_text": "ZeroDivisionError: division by zero",
-                     "tips": "除数为0了，你可以：1.  xxxx; 2.xxxx"}]
+logger.tips_list = [
+    {
+        "position": "test.py:91 in <module>",  # 传入参数
+        "error_text": "ZeroDivisionError: division by zero",
+        "tips": "除数为0了，你可以：1.  xxxx; 2.xxxx",
+    }
+]
 
 print(5 / 0)  # 91行抛错

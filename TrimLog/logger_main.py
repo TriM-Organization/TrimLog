@@ -14,7 +14,7 @@
 
        https://www.apache.org/licenses/LICENSE-2.0
 继承协议：
-版权所有© 全体 万花项目 和 睿穆组织 作者
+版权所有© 全体 万花项目 和 睿乐组织 作者
 
    Copyright 2022-2023 all the developers of Kaleido and Trim Organization
 
@@ -32,9 +32,9 @@ import platform
 import time
 
 from types import TracebackType
-from typing import Literal, Optional, Type, TypeVar, Union
+from typing import Literal, Type, TypeVar
 
-import rich.traceback
+from rich.constrain import Constrain
 from rich.console import Console
 from rich.traceback import Traceback
 
@@ -59,7 +59,7 @@ class Logger:
     main logger class.
     """
 
-    instance: Optional[Logger] = None
+    instance: Logger
     """
     Logger.instance: used to get value for static method
     """
@@ -183,8 +183,8 @@ class Logger:
         self.writing: bool = writing
         self.print_level: L = print_level
         self.write_level: L = write_level
-        self.print_default_weight = WEIGHT_ORDER.get(self.print_level)
-        self.write_default_weight = WEIGHT_ORDER.get(self.write_level)
+        self.print_default_weight = WEIGHT_ORDER[self.print_level]
+        self.write_default_weight = WEIGHT_ORDER[self.write_level]
 
         # 文件最多保存多少个后开始删除
         self.max_log_count: int = max_log_count
@@ -216,7 +216,6 @@ class Logger:
         :return: things you input.
         """
         if self.is_logging or mandatory_use:  # 如果强制使用或选择使用log
-
             # 设置log style
             style: Optional[str]
             style_len: Optional[int]
@@ -228,7 +227,7 @@ class Logger:
             length = 12 + style_len
 
             # 获取目前log的输出权重
-            level_weight = WEIGHT_ORDER.get(level)
+            level_weight = WEIGHT_ORDER[level]
 
             # 获取log前面输出的执行代码位置信息
             if self.show_position:
@@ -303,8 +302,8 @@ class Logger:
         """
         refresh weight datas.
         """
-        self.print_default_weight = WEIGHT_ORDER.get(self.print_level)
-        self.write_default_weight = WEIGHT_ORDER.get(self.write_level)
+        self.print_default_weight = WEIGHT_ORDER[self.print_level]
+        self.write_default_weight = WEIGHT_ORDER[self.write_level]
 
     @staticmethod
     def get_detail_info() -> tuple[str, str, int]:
@@ -512,12 +511,15 @@ class Logger:
 
     @staticmethod
     @atexit.register
-    def save() -> None:
+    def save(
+        empty_log_tip: str = "日志未保存：空日志文件",
+        log_saved_to_tip: str = "日志保存至 '{}\\{}'",
+        save_failure_tip: str = '日志保存失败："{}"',
+    ) -> None:
         """
         to save log's function.
         """
         if Logger.instance.is_logging:  # 用 instance 访问self里的对象
-
             # 新建./log目录
             try:
                 list_of_files = os.listdir("logs")
@@ -541,16 +543,17 @@ class Logger:
 
                 # log_text 为空判断
                 if not Logger.instance.log_text:
-                    Logger.instance.log(f"日志未保存：空日志文件", "WARNING")
+                    Logger.instance.log(empty_log_tip, "WARNING")
                     return
 
                 if Logger.instance.log_text == "":
-                    Logger.instance.log(f"日志未保存：空日志文件", "INFO")
+                    Logger.instance.log(empty_log_tip, "INFO")
                     return
 
                 # 打开文件写入
                 whole_path = "./logs/" + (
-                    name := Logger.str_start_time + f"{Logger.instance.suffix}.log"
+                    name := Logger.str_start_time
+                    + "{}.log".format(Logger.instance.suffix)
                 )
                 with open(
                     whole_path,
@@ -559,10 +562,10 @@ class Logger:
                 ) as f:
                     f.write(Logger.instance.log_text)  # 写入
 
-                Logger.instance.log(f"日志保存至 '{path}\\{name}'", "INFO")
+                Logger.instance.log(log_saved_to_tip.format(path, name), "INFO")
 
             except IOError as e:
-                Logger.instance.log(f'日志保存失败："{e}"', "ERROR")
+                Logger.instance.log(save_failure_tip.format(e), "ERROR")
 
     @staticmethod
     @atexit.register
@@ -571,7 +574,7 @@ class Logger:
         add tips' function.
         """
         global osc_
-        if (Logger.instance.is_logging and osc_.isRelease) or Logger.instance.is_tips:
+        if (Logger.instance.is_logging and osc_.is_release) or Logger.instance.is_tips:
             log_t = Logger.instance.log_text
             tips_d = Logger.instance.tips_list
             del_t = (
@@ -580,14 +583,14 @@ class Logger:
             end_t = "└" + "─" * 98 + "┘"
 
             clean_t = (
-                log_t[log_t.find(del_t) + 100:].replace("│ │", "").replace("│", "")
+                log_t[log_t.find(del_t) + 100 :].replace("│ │", "").replace("│", "")
             )
 
-            end_error_text = log_t[log_t.find(end_t) + 100:].replace("\n", "")
+            end_error_text = log_t[log_t.find(end_t) + 100 :].replace("\n", "")
             error_position = (
                 clean_t[: clean_t.find("\n", 2)].replace("\n", "")[1:].replace("  ", "")
             )
-            error_position = error_position[error_position.rfind("\\") + 1:]
+            error_position = error_position[error_position.rfind("\\") + 1 :]
 
             if tips_d is not []:
                 for i in tips_d:
@@ -603,15 +606,21 @@ class Logger:
                         pass
 
     @staticmethod
-    def register_traceback(console_width: int = 64, info_show_fun=lambda x:None) -> None:
+    def register_traceback(
+        console_width: int = 64, info_show_fun: Callable = lambda x: None
+    ) -> None:
         """
         register traceback function.
         :param console_width: int, the width of traceback console as well the traceback log file's context
         :param info_show_fun: function, there should be a function, which must contains an argument to convery
         a traceback information
         """
-        if not isinstance(info_show_fun, type(lambda x:None)):
-            logger.write('参数 info_show_fun 应该是一个函数。你传入的是 {}: {}'.format(info_show_fun,type(info_show_fun)))
+        if not isinstance(info_show_fun, type(lambda x: None)):
+            logger.write(
+                "参数 info_show_fun 应该是一个函数。你传入的是 {}: {}".format(
+                    info_show_fun, type(info_show_fun)
+                )
+            )
             info_show_fun = lambda x: None
         if Logger.instance.is_logging:
             traceback_console = Console(file=sys.stderr, width=console_width)
@@ -621,7 +630,6 @@ class Logger:
                 value: BaseException,
                 traceback: Optional[TracebackType],
             ) -> None:
-
                 exception = Traceback.from_exception(
                     type_,
                     value,
@@ -662,7 +670,7 @@ class Logger:
                 for exc in exception.__rich_console__(
                     traceback_console, traceback_console.options
                 ):
-                    if isinstance(exc, rich.traceback.Constrain):
+                    if isinstance(exc, Constrain):
                         panel = exc.renderable
 
                         for thing in panel.__rich_console__(
@@ -687,7 +695,7 @@ class Logger:
 # 获取基础信息
 py_version: str = platform.version()
 py_sys_version: str = sys.version
-py_sys_version_info: str = sys.version_info
+py_sys_version_info: sys._version_info = sys.version_info
 py_platform: str = sys.platform
 default_encoding: str = sys.getdefaultencoding()  # 获取系统当前编码
 file_system_encoding: str = sys.getfilesystemencoding()  # 获取文件系统使用编码方式
@@ -711,14 +719,14 @@ def log__init__(
     # 判断是否需要重新生成logger
     if is_regenerate:
         logger = Logger()
-        logger.register_traceback()
+        logger.register_traceback(osc_in.console_width, osc_in.exit_execution)
 
     # osc部分
     osc_ = osc_in
-    logger.is_logging = osc_.isLoggingUsing  # 设置是否启用logger
+    logger.is_logging = osc_.is_logging_using  # 设置是否启用logger
 
     # 判断release
-    if osc_.isRelease:  # 设置是否release
+    if osc_.is_release:  # 设置是否release
         logger.include_release_info = True
         logger.headline_shower(mandatory_use=True)  # release强制输出headline
     else:
@@ -765,10 +773,10 @@ osc_: ObjectStateConstant = ObjectStateConstant()
 pip_manage_: PipManage = PipManage()
 
 logger: Logger = Logger()
-logger.register_traceback()
+logger.register_traceback(osc_.console_width, osc_.exit_execution)
 
 # 内置等级
-DEBUG: Literal["DEBUG"] = "DEBUG"  # ”罗嗦的“，不会在日志文件中记录的
+DEBUG: Literal["DEBUG"] = "DEBUG"  # ”啰嗦的“，不会在日志文件中记录的
 INFO: Literal["INFO"] = "INFO"  # 非开发者能看的懂的信息
 WARNING: Literal["WARNING"] = "WARNING"  # 对程序本身没有影响的异常
 ERROR: Literal["ERROR"] = "ERROR"  # 异常，但是会被捕捉

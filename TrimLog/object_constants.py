@@ -14,7 +14,7 @@
 
        https://www.apache.org/licenses/LICENSE-2.0
 继承协议：
-版权所有© 全体 万花项目 和 睿穆组织 作者
+版权所有© 全体 万花项目 和 睿乐组织 作者
 
    Copyright 2022-2023 all the developers of Kaleido and Trim Organization
 
@@ -26,32 +26,56 @@
 """
 
 import builtins
+from typing import Union, Iterable, Optional,Callable
 import rich.console
+
+from .utils import tuple_version_2_string_version, string_version_2_tuple_version
 
 
 class ObjectStateConstant(builtins.object):
-    def __init__(self):
+    def __init__(
+        self,
+        is_debugging: bool = True,
+        logging_project_name: str = "",
+        logging_project_version: Union[str, Iterable] = (0, 0, 1),
+        is_logging: bool = True,
+        is_this_a_release: bool = False,
+        logging_exit_exec:Callable = lambda x:None,
+        console_width:int = 64,
+    ):
         """
         __init__() function. change values after you initialize.
         """
-        self.debugging = True
-        self.project_name = ""
-        self.version = "v0.0.1"
-        self.version_tuple = (0, 0, 1)
-        self.ParameterSelection = "default=self"
+        self.debugging: bool = is_debugging
+        self.project_name: str = logging_project_name
+        self.version: str = (
+            logging_project_version
+            if isinstance(logging_project_version, str)
+            else tuple_version_2_string_version(logging_project_version)
+        )
+        self.version_tuple: tuple = (
+            tuple(logging_project_version)
+            if isinstance(logging_project_version, Iterable)
+            else string_version_2_tuple_version(logging_project_version)
+        )
+        self.ParameterSelection: str = "default=self"
 
-        self.isLoggingUsing = True
+        self.is_logging_using: bool = is_logging
 
-        self.isRelease = False
+        self.is_release: bool = is_this_a_release
 
-        self.console = None
+        self.console: Optional[rich.console.Console] = None
+
+        self.exit_execution: Callable = logging_exit_exec
+
+        self.console_width:int = console_width
 
     def set_console(self, in_console: rich.console.Console) -> None:
         """
         give a logger console object.
         :param in_console: logger console object.
         """
-        self.console: rich.console.Console = in_console
+        self.console: Optional[rich.console.Console] = in_console
 
     def get_is_debug(self) -> bool:
         return self.debugging

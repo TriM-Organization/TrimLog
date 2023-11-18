@@ -10,7 +10,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setuptools.setup(
     name="TrimLog",
     version=TrimLog.__version__,
-    author="FedDragon1, Eilles Wan, bgArray", # 2333 你太谦虚了，你应该放在第一个的 ——EW2BA
+    author="FedDragon1, Eilles Wan, bgArray",  # 2333 你太谦虚了，你应该放在第一个的 ——EW2BA
     author_email="TriM-Organization@hotmail.com",
     description="TriMO组织的python项目log和项目管理框架库。\n"
     " The Python project log and project management framework library for TriM Organization.",
@@ -18,6 +18,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/TriM-Organization/TrimLog",
     packages=setuptools.find_packages(),
+    include_package_data=True,
     classifiers=[
         "Intended Audience :: Developers",
         "Natural Language :: Chinese (Simplified)",

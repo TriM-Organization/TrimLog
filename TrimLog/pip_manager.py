@@ -12,7 +12,7 @@
 
        https://www.apache.org/licenses/LICENSE-2.0
 继承协议：
-版权所有© 全体 万花项目 和 睿穆组织 作者
+版权所有© 全体 万花项目 和 睿乐组织 作者
 
    Copyright 2022-2023 all the developers of Kaleido and Trim Organization
 
